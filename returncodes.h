@@ -2,6 +2,7 @@
  * @brief Definitions of error codes
  */
 
+// Inclusion guard
 #ifndef RETURNCODES_H
 #define RETURNCODES_H
 
