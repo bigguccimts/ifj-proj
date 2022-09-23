@@ -1,5 +1,13 @@
-/**
- * @brief Definitions of error codes
+/*
+ * Implementace překladače imperativního jazyka IFJ22
+ *
+ * @file returncodes.h
+ * @brief File containing return codes for the compiler
+ *
+ * @author Matúš Ďurica (xduric06)
+ * @author Ivan Mahút (xmahut01)
+ * @author Dušan Slúka (xsluka00)
+ * @author Gabriela Paganíková (xpagan00)
  */
 
 // Inclusion guard
@@ -18,4 +26,4 @@
 #define SEMANTIC_OTHER_ERR 8  // Other semantic errors
 #define INTERNAL_ERR 99       // Internal error ie. memory allocation error
 
-#endif
+#endif // RETURNCODES_H
