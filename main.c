@@ -20,17 +20,5 @@
  */
 int main()
 {
-    Symtab table;
-    symt_init(table);
-    if (symt_init(NULL) == INTERNAL_ERR)
-        fprintf(stderr, "%d\n", INTERNAL_ERR);
-    tab_item_data data;
-    tab_item_data ret;
-    data.type = BOOL_T;
-    symt_add(table, "foo", data);
-    symt_find(table, "foo", &ret);
-    printf("%d\n", ret.type);
-    symt_free(table);
-
     return ALL_GOOD;
 }
