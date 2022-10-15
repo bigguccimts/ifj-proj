@@ -55,14 +55,14 @@ typedef struct tab_item
 
 typedef Symtab_item Symtab[SYMTAB_MAX_SIZE];
 
-void symt_init(Symtab);
+int symt_init(Symtab);
 
-void symt_add(Symtab, char *, tab_item_data);
+int symt_add(Symtab, char *, tab_item_data);
 
-tab_item_data symt_find(Symtab, char *);
+int symt_find(Symtab, char *, tab_item_data *);
 
 // bool symt_remove(Symtab, char *);
 
-void symt_free(Symtab);
+int symt_free(Symtab);
 
 #endif // HASHTABLE_H
