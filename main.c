@@ -1,4 +1,4 @@
-/*
+/**
  * Implementace překladače imperativního jazyka IFJ22
  *
  * @file main.c

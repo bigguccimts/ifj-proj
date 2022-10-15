@@ -32,7 +32,7 @@ SOFTWARE.
 #include <stdio.h>
 #include <stdint.h>
 #include "murmurhash.h"
-#include "hashtable.h"
+#include "symtable.h"
 
 uint32_t
 murmurhash(const char *key, uint32_t len, uint32_t seed)

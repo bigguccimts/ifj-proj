@@ -1,5 +1,8 @@
-/*
+/**
  * Implementace překladače imperativního jazyka IFJ22
+ *
+ * @file symtable.h
+ * @brief File containing definitions of structs and functions for the symbol hash table
  *
  * @author Matúš Ďurica (xduric06)
  * @author Ivan Mahút (xmahut01)
@@ -14,8 +17,12 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#define SYMTAB_MAX_SIZE 256
+#define SYMTAB_MAX_SIZE 256 // Max size of the symbol table - keep it in 2^n format!
 
+/**
+ * @brief Contains data types in strings, just for ease of use
+ *
+ */
 typedef enum
 {
     INT_T,
@@ -24,17 +31,25 @@ typedef enum
     BOOL_T
 } Data_type;
 
+/**
+ * @brief Struct containg data of 1 item in the symbol table
+ *
+ */
 typedef struct
 {
-    Data_type type; // type of var/func
-    bool def;       // var/func has been defined
-    bool global;    // global variable
+    Data_type type; // Data type of variable/function
+    bool def;       // Variable/function has been defined
+    bool global;    // Global variable
 } tab_item_data;
 
+/**
+ * @brief Item of hash table
+ *
+ */
 typedef struct tab_item
 {
-    char *identifier;   // identifier of var/func
-    tab_item_data data; // data struct
+    char *identifier;   // Identifier of variable/function
+    tab_item_data data; // Data struct containing data of the item
     // struct tab_item *next_item; // pointer to next item in the hash table, probably useless
 } * Symtab_item;
 
