@@ -10,26 +10,15 @@
  * @author Gabriela Paganíková (xpagan00)
  */
 
-#include "hashtable.h"
+#include "symtable.h"
 #include "returncodes.h"
-#include <malloc.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 /*
  * @brief Main function of the compiler
  * @return 0 if no errors occured
  */
 int main()
 {
-    Symtab tab;
-    symt_init(tab);
-    tab_item_data data, ret;
-    data.type = BOOL_T;
-    symt_add(tab, "Peter", data);
-    printf("%d\n", murmurhash("Peter", (uint32_t)strlen("Peter"), 0));
-    ret = symt_find(tab, "Peter");
-    printf("%d\n", ret.type);
-
     return ALL_GOOD;
 }
