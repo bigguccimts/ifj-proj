@@ -22,14 +22,5 @@
  */
 int main()
 {
-    Symtab tab;
-    symt_init(tab);
-    tab_item_data data, ret;
-    data.type = BOOL_T;
-    symt_add(tab, "Peter", data);
-    printf("%d\n", murmurhash("Peter", (uint32_t)strlen("Peter"), 0));
-    ret = symt_find(tab, "Peter");
-    printf("%d\n", ret.type);
-    symt_free(tab);
     return ALL_GOOD;
 }
