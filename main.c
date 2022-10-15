@@ -10,12 +10,10 @@
  * @author Gabriela Paganíková (xpagan00)
  */
 
-#include "hashtable.h"
+#include "symtable.h"
 #include "returncodes.h"
-#include <malloc.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 /*
  * @brief Main function of the compiler
  * @return 0 if no errors occured
