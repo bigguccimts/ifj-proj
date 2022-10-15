@@ -33,9 +33,9 @@ typedef struct
 
 typedef struct tab_item
 {
-    char *identifier;           // identifier of var/func
-    tab_item_data data;         // data struct
-    struct tab_item *next_item; // pointer to next item in the hash table
+    char *identifier;   // identifier of var/func
+    tab_item_data data; // data struct
+    // struct tab_item *next_item; // pointer to next item in the hash table, probably useless
 } * Symtab_item;
 
 typedef Symtab_item Symtab[SYMTAB_MAX_SIZE];
