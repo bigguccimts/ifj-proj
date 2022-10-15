@@ -30,6 +30,6 @@ int main()
     printf("%d\n", murmurhash("Peter", (uint32_t)strlen("Peter"), 0));
     ret = symt_find(tab, "Peter");
     printf("%d\n", ret.type);
-
+    symt_free(tab);
     return ALL_GOOD;
 }

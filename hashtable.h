@@ -46,7 +46,7 @@ void symt_add(Symtab, char *, tab_item_data);
 
 tab_item_data symt_find(Symtab, char *);
 
-bool symt_remove(Symtab, char *);
+// bool symt_remove(Symtab, char *);
 
 void symt_free(Symtab);
 
