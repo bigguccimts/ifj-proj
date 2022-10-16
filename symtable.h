@@ -39,7 +39,6 @@ typedef struct
 {
     Data_type type; // Data type of variable/function
     bool def;       // Variable/function has been defined
-    bool global;    // Global variable
 } tab_item_data;
 
 /**
