@@ -6,21 +6,44 @@ struct TOKEN
     struct Value value;
 };
 
-struct Value{
-    
+struct Value
+{   
+    //TO DO somethinng for string values dinamicle array
     enum lex;
     int intiger;
     float floating;
-
 };
-typedef enum Type_OF_LEX{
-
-    IF,
-    WHILE,
-    C
-
-
-
+typedef enum Type_Of_LEX
+{
+    //TO DO $-this litle shit goes where ?
+    LEX_else,
+    LEX_float,
+    LEX_function,
+    LEX_if,
+    LEX_int,
+    LEX_null,
+    LEX_return,
+    LEX_string,
+    LEX_void,
+    LEX_while,
+    LEX_plus,
+    LEX_minus,
+    LEX_multypli,
+    LEX_divide,
+    LEX_L_round_bracket,
+    LEX_R_round_bracket,
+    LEX_L_curly_bracket,
+    LEX_R_curly_bracket,
+    LEX_equals,
+    LEX_2equals,
+    LEX_3equals,
+    LEX_3equals_negation,
+    LEX_less,
+    LEX_less_eaqual,
+    LEX_great,
+    LEX_great_eaqual,
+    LEX_lomeno,
+    LEX_coments,
 };
 enum End_States
 {
