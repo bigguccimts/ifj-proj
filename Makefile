@@ -6,12 +6,12 @@
 # Gabriela Paganíková (xpagan00)
 
 CC=gcc
-CFLAGS=-std=c99 -pedantic -Wall -Wextra
+CFLAGS=-std=c99 -pedantic -Wall -Wextra 
 RM=rm -f
 PROJ=ifj22
 
 $(PROJ): *.c clean
-	$(CC) $(CFLAGS) -o $(PROJ) *.c
+	$(CC) $(CFLAGS) -o $(PROJ) *.h *.c 
 
 clean:
 	$(RM) *.o $(PROJ)
