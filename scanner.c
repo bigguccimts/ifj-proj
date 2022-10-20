@@ -10,43 +10,58 @@
  * @author Gabriela Paganíková (xpagan00)
  */
 
-#include <stdio.h>
 #include "scanner.h"
 #include <ctype.h>
+#include <stdio.h>
 
+States Automat(States actual_state, int transition) {
 
-States Automat(States actual_state, int transition)
-{
+  switch (actual_state) {
+  case Start:
+    if (isalpha(transition) || isalnum(transition)) {
+        actual_state =  ID;
+    }
+    /*if (isalpha(transition) || isalnum(transition)) {
+        actual_state =  ID;
+    }
+    if (isalpha(transition) || isalnum(transition)) {
+        actual_state =  ID;
+    }
+    if (isalpha(transition) || isalnum(transition)) {
+        actual_state =  ID;
+    }*/
 
-    switch (actual_state)
-    {
-    case ID:
-        if (isalpha(transition))
-        {
-        }
-        break;
-    case Int:
-
-        break;
-
-    default:
-        break;
+    break;
+  case ID:
+    if (isalpha(transition) || isalnum(transition)) {
+        actual_state =  ID;
+    } 
+    
+    else {
+        //TO DO Create token 
     }
 
-    return actual_state;
+    break;
+  case Int:
+
+    break;
+
+  default:
+    break;
+  }
+
+  return actual_state;
 }
 
-struct TOKEN generate_token()
-{
-    States actual_state = Start;
-    // enum End_states end_state = ES_ERROR;
-    int transition = getchar();
+struct TOKEN generate_token() {
+  States actual_state = Start;
+  // enum End_states end_state = ES_ERROR;
+  int transition = getchar();
+  //TO DO crete dinamicli alocated array for value for token
+  while (1) {
+    actual_state = Automat(actual_state, transition);
+  }
+  // struct TOKEN token;
 
-    while (1)
-    {
-        actual_state = Automat(actual_state, transition);
-    }
-    //struct TOKEN token;
-
-    // return token;
+  // return token;
 }
