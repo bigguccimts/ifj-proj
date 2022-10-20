@@ -83,8 +83,8 @@ typedef enum
     LEX_less_eaqual,
     LEX_great,
     LEX_great_eaqual,
-    LEX_lomeno,
-    LEX_coments,
+    LEX_slash,
+    LEX_comments,
 }Type_Of_LEX;
 /*typedef enum End_States
 {
