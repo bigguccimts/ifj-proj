@@ -118,7 +118,6 @@ typedef enum
 typedef enum 
 {
     Start,
-
     ID,
     Int,
     Float,
@@ -134,19 +133,18 @@ typedef enum
     Ror,
     Cul,
     Cur,
-    EQU,
-    EQU1,
-    EQU2,
+    Equ,
+    Equ1,
+    Equ2,
     Less,
     Less1,
-    great,
-    great1,
+    Great,
+    Great1,
     Com,
     Com1,
     Com2,
     Com3,
     Com4,
-    Com5,
     String,
     String1,
     Esc,
@@ -154,6 +152,6 @@ typedef enum
     Esc2,
     Esc3,
     Esc4,
-    // KEY_WORD ?
+
     ERROR,
 }States;
