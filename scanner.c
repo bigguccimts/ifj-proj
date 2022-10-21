@@ -17,8 +17,6 @@
 
 States Automat(States current_state, int transition)
 {
-  printf("Curent state %d \n", current_state);
-  printf("Transition value %c \n", transition);
   switch (current_state)
   {
   case Start:
@@ -418,8 +416,15 @@ States Automat(States current_state, int transition)
 
 char *init_Str(char *Str, int size)
 {
-  // size of an array
+
   Str = (char *)calloc(size, sizeof(char));
+
+  if (Str == NULL)
+  {
+    fprintf(stderr, "Could not allocate required memory\n");
+
+    exit(LEX_ANALYSIS_ERR);
+  }
 
   return Str;
 }
@@ -428,6 +433,39 @@ void clen_Str(char *Str)
 {
   free(Str);
 }
+int check_for_keyword(char *value)
+{
+  //TO DO write other keywords
+  if (strcmp(value, "IF") == 0 || strcmp(value, "ELSE") == 0){
+    return 1;
+  }else{
+    return 0;
+  }
+}
+
+//TO DO 
+End_States determin_EndState(States Final_sate, char *value)
+{
+  End_States end_states;
+  switch (Final_sate)
+  {
+  case ID:
+    if (check_for_keyword(value))
+    {
+      end_states = ES_KEY_WORD;
+    }
+    else
+    {
+      end_states = ES_ID;
+    }
+    break;
+
+  default:
+    break;
+  }
+
+  return end_states;
+}
 
 struct TOKEN generate_token()
 {
@@ -435,6 +473,8 @@ struct TOKEN generate_token()
   TOKEN token;
   States previus_state;
   States current_state = Start;
+
+  End_States end_state;
 
   int i = 0;
   int size = 10;
@@ -454,25 +494,14 @@ struct TOKEN generate_token()
         Str[i] = transition;
       }
 
-      for (int i = 0; i < size; i++)
-      {
-        if (Str[i] != NULL)
-        {
-          printf("Tokens value %c \n", Str[i]);
-        }else{
-          break;
-        }
-
-      }
-
       // TO DO realoc array make it bigger
-      int a = i+1;
+      int a = i + 1;
       if (a > size - 1)
       {
         fprintf(stderr, "Too big\n");
         exit(LEX_ANALYSIS_ERR);
       }
-      //increment index of an Array containing value of token
+      // increment index of an Array containing value of token
       i++;
     }
     else
@@ -483,18 +512,37 @@ struct TOKEN generate_token()
         ungetc(transition, stdin);
       }
     }
-
   } while (current_state != ERROR);
+  // checks the tokens value delete later
+  printf("Tokens value : ");
+  for (int i = 0; i < size; i++)
+  {
+
+    if (Str[i] != NULL)
+    {
+      printf("%c", Str[i]);
+    }
+    else
+    {
+      break;
+    }
+  }
+  printf("\n");
   // checks if we didn t end in state whitch is not END STATE
   if (previus_state == Exp || previus_state == Exp1 || previus_state == Com || previus_state == Com2 || previus_state == Com3)
   {
     fprintf(stderr, "Error ocured in class scanner.c\n");
     exit(LEX_ANALYSIS_ERR);
   }
+  else
+  {
+
+    token.End_States = determin_EndState(previus_state, Str);
+  }
 
   // Delete later
-  token.End_States = ES_Add;
-  token.Value.intiger = 2;
+  // token.End_States = ES_Add;
+  token.Value.intiger = *Str;
 
   clen_Str(Str);
   return token;

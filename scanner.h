@@ -49,7 +49,7 @@ typedef struct TOKEN
     }Value;
 }TOKEN;
 
-typedef enum 
+/*typedef enum 
 {
     // TO DO $-this litle shit goes where ?
     LEX_else,
@@ -80,8 +80,9 @@ typedef enum
     LEX_great_eaqual,
     LEX_slash,
     LEX_comments,
-}Type_Of_LEX;
-/*typedef enum End_States
+}Type_Of_LEX;*/
+
+typedef enum
 {
     ES_ID,
     ES_Int,
@@ -108,7 +109,7 @@ typedef enum
     ES_String1,
     ES_KEY_WORD,
     ES_ERROR,
-};*/
+} End_States;
 
 typedef enum 
 {
@@ -150,4 +151,5 @@ typedef enum
 
     ERROR,
 }States;
+
 
