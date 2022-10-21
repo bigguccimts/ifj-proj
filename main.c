@@ -16,7 +16,7 @@
  * @brief Main function of the compiler
  * @return 0 if no errors occured
  */
-int main()
+/*int main()
 {
     return ALL_GOOD;
-}
+}*/

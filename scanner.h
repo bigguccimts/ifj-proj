@@ -11,8 +11,8 @@
  */
 
 #include <stdio.h>
-
-struct TOKEN
+#include <stdlib.h>
+typedef struct TOKEN
 {
     enum ES
     {
@@ -43,16 +43,11 @@ struct TOKEN
         ES_ERROR,
     }End_States;
 
-    //LEXEME lexeme lexem;
-};
-
-struct LEXEM
-{
-    // TO DO somethinng for string values dinamicle array
-    // enum Type_Of_LEX;
-    int intiger;
-    float floating;
-}lexeme;
+    union{
+        int intiger;
+        char *Str;
+    }Value;
+}TOKEN;
 
 typedef enum 
 {
@@ -155,3 +150,4 @@ typedef enum
 
     ERROR,
 }States;
+

@@ -9,14 +9,16 @@
  * @author Dušan Slúka (xsluka00)
  * @author Gabriela Paganíková (xpagan00)
  */
-
+#include "returncodes.h"
 #include "scanner.h"
 #include <ctype.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 States Automat(States current_state, int transition)
 {
-
+  printf("Curent state %d \n", current_state);
+  printf("Transition value %c \n", transition);
   switch (current_state)
   {
   case Start:
@@ -414,17 +416,97 @@ States Automat(States current_state, int transition)
   return current_state;
 }
 
+char *init_Str(char *Str, int size)
+{
+  // size of an array
+  Str = (char *)calloc(size, sizeof(char));
+
+  return Str;
+}
+
+void clen_Str(char *Str)
+{
+  free(Str);
+}
+
 struct TOKEN generate_token()
 {
-  States current_state = Start;
-  // enum End_states end_state = ES_ERROR;
-  int transition = getchar();
-  // TO DO crete dinamicli alocated array for value for token
-  while (1)
-  {
-    current_state = Automat(current_state, transition);
-  }
-  // struct TOKEN token;
 
-  // return token;
+  TOKEN token;
+  States previus_state;
+  States current_state = Start;
+
+  int i = 0;
+  int size = 10;
+  char *Str = NULL;
+  Str = init_Str(Str, 5);
+  // TO DO crete dinamicli alocated array for value for token
+  do
+  {
+    int transition = getchar();
+    previus_state = current_state;
+    current_state = Automat(current_state, transition);
+
+    if (current_state != ERROR)
+    {
+      if (transition != ' ')
+      {
+        Str[i] = transition;
+      }
+
+      for (int i = 0; i < size; i++)
+      {
+        if (Str[i] != NULL)
+        {
+          printf("Tokens value %c \n", Str[i]);
+        }else{
+          break;
+        }
+
+      }
+
+      // TO DO realoc array make it bigger
+      int a = i+1;
+      if (a > size - 1)
+      {
+        fprintf(stderr, "Too big\n");
+        exit(LEX_ANALYSIS_ERR);
+      }
+      //increment index of an Array containing value of token
+      i++;
+    }
+    else
+    {
+      // unused char is puted back on strem w/o empty space
+      if (transition != ' ')
+      {
+        ungetc(transition, stdin);
+      }
+    }
+
+  } while (current_state != ERROR);
+  // checks if we didn t end in state whitch is not END STATE
+  if (previus_state == Exp || previus_state == Exp1 || previus_state == Com || previus_state == Com2 || previus_state == Com3)
+  {
+    fprintf(stderr, "Error ocured in class scanner.c\n");
+    exit(LEX_ANALYSIS_ERR);
+  }
+
+  // Delete later
+  token.End_States = ES_Add;
+  token.Value.intiger = 2;
+
+  clen_Str(Str);
+  return token;
+}
+void generate_table_of_tokens()
+{
+  TOKEN token;
+  token = generate_token();
+  printf("Token %d", token.Value.intiger);
+}
+
+int main()
+{
+  generate_table_of_tokens();
 }
