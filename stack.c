@@ -45,7 +45,7 @@ void stack_init(Symstack *stack, int *ef)
  * @param table Pointer to the hash table of symbols
  * @param ef Pointer to the error flag variable
  *
- * @retval INTERNAL_ERR if no error occurred
+ * @retval INTERNAL_ERR if error occurred
  */
 void stack_push(Symstack *stack, Symtab *table, int *ef)
 {
@@ -82,7 +82,7 @@ void stack_push(Symstack *stack, Symtab *table, int *ef)
  * @param retptr Pointer to the variable where returned hash table pointer will be stored
  * @param ef Pointer to the error flag variable
  *
- * @retval INTERNAL_ERR if no error occurred
+ * @retval INTERNAL_ERR if error occurred
  */
 void stack_peek(Symstack *stack, stack_item_ptr *retptr, int *ef)
 {
@@ -101,7 +101,7 @@ void stack_peek(Symstack *stack, stack_item_ptr *retptr, int *ef)
  * @param data Struct containing data of the symbol
  * @param ef Pointer to the error flag variable
  *
- * @retval INTERNAL_ERR if no error occurred
+ * @retval INTERNAL_ERR if error occurred
  */
 void stack_add_data_top(Symstack *stack, char *id, tab_item_data data, int *ef)
 {
@@ -117,7 +117,7 @@ void stack_add_data_top(Symstack *stack, char *id, tab_item_data data, int *ef)
  * @param retptr Pointer to the variable where returned hash table pointer will be
  * @param ef Pointer to the error flag variable
  *
- * @retval INTERNAL_ERR if no error occurred
+ * @retval INTERNAL_ERR if error occurred
  */
 void stack_pop(Symstack *stack, stack_item_ptr *retptr, int *ef)
 {
@@ -147,7 +147,7 @@ void stack_pop(Symstack *stack, stack_item_ptr *retptr, int *ef)
  * @param ef Pointer to the error flag variable
  *
 
- * @retval INTERNAL_ERR if no error occurred
+ * @retval INTERNAL_ERR if error occurred
  */
 void stack_free(Symstack *stack, int *ef)
 {
@@ -177,6 +177,14 @@ void stack_free(Symstack *stack, int *ef)
     }
 }
 
+/**
+ * @brief Aux function used only after popping
+ *
+ * @param tab Pointer to the symbol table
+ * @param ef Pointer to the error flag variable
+ *
+ * @retval INTERNAL_ERR if error occurred
+ */
 void stack_free_after_pop(Symtab **tab, int *ef)
 {
     if (*tab != NULL)
