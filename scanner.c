@@ -149,7 +149,7 @@ States Automat(States current_state, int transition)
     {
       current_state = ERROR;
     }
-
+    break;
   case Exp1:
     if (transition >= '0' || transition <= '9')
     {
@@ -159,7 +159,7 @@ States Automat(States current_state, int transition)
     {
       current_state = ERROR;
     }
-
+    break;
   case Exp2:
     if (transition >= '0' || transition <= '9')
     {
@@ -199,7 +199,7 @@ States Automat(States current_state, int transition)
     break;
 
   case Com:
-    if (transition >= '32' && transition <= '126')
+    if (transition >= 32 && transition <= 126)
     {
       current_state = Com;
     }
@@ -218,7 +218,7 @@ States Automat(States current_state, int transition)
     break;
 
   case Com2:
-    if (32 <= transition > 42 && 42 < transition <= 126)
+    if (transition >= 32 && transition <= 126 && transition != 42)
     {
       current_state = Com2;
     }
@@ -234,7 +234,7 @@ States Automat(States current_state, int transition)
 
   case Com3:
 
-    if (32 <= transition > 47 && 47 < transition <= 126)
+    if (transition >= 32 && transition <= 126 && transition != 47)
     {
       current_state = Com2;
     }
@@ -321,15 +321,15 @@ States Automat(States current_state, int transition)
     break;
 
   case String:
-    if (32 <= transition > 34 && 34 < transition > 92 && 92 < transition <= 126)
+    if (transition >= 32 && transition <= 126 && transition != 34 && transition != 92)
     {
       current_state = String;
     }
-    else if (transition = 34)
+    else if (transition == 34)
     {
       current_state = String1;
     }
-    else if (transition = 92)
+    else if (transition == 92)
     {
       current_state = Esc;
     }
@@ -348,7 +348,7 @@ States Automat(States current_state, int transition)
     {
       current_state = String;
     }
-    else if (transition = 'x')
+    else if (transition == 'x')
     {
       current_state = Esc1;
     }
@@ -363,7 +363,7 @@ States Automat(States current_state, int transition)
     break;
 
   case Esc1:
-    if ((transition >= '0' && transition <= '9') || 65 <= transition <= 70 || 97 <= transition <= 102)
+    if ((transition >= '0' && transition <= '9') || (65 <= transition && transition <= 70) || (97 <= transition && transition <= 102))
     {
       current_state = Esc2;
     }
@@ -374,7 +374,7 @@ States Automat(States current_state, int transition)
     break;
 
   case Esc2:
-    if ((transition >= '0' && transition <= '9') || 65 <= transition <= 70 || 97 <= transition <= 102)
+    if ((transition >= '0' && transition <= '9') || (65 <= transition && transition <= 70) || (97 <= transition && transition <= 102))
     {
       current_state = String;
     }

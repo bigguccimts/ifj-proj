@@ -11,7 +11,7 @@ RM=rm -f
 PROJ=ifj22
 
 $(PROJ): *.c clean
-	$(CC) $(CFLAGS) -o $(PROJ) *.h *.c 
+	$(CC) $(CFLAGS) -o $(PROJ)  *.c 
 
 clean:
 	$(RM) *.o $(PROJ)
