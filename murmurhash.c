@@ -32,7 +32,7 @@ SOFTWARE.
 #include <stdio.h>
 #include <stdint.h>
 #include "murmurhash.h"
-#include "hashtable.h"
+#include "symtable.h"
 
 uint32_t
 murmurhash(const char *key, uint32_t len, uint32_t seed)
@@ -80,15 +80,18 @@ murmurhash(const char *key, uint32_t len, uint32_t seed)
     { // `len % 4'
     case 3:
         k ^= (tail[2] << 16);
+        __attribute__((fallthrough));
     case 2:
-        k ^= (tail[1] << 8);
 
+        k ^= (tail[1] << 8);
+        __attribute__((fallthrough));
     case 1:
         k ^= tail[0];
         k *= c1;
         k = (k << r1) | (k >> (32 - r1));
         k *= c2;
         h ^= k;
+        break;
     }
 
     h ^= len;

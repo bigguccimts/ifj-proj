@@ -10,8 +10,9 @@
  * @author Gabriela Paganíková (xpagan00)
  */
 
-#include "symtable.h"
 #include "returncodes.h"
+#include "symtable.h"
+#include "stack.h"
 #include <stdio.h>
 #include <stdlib.h>
 /*

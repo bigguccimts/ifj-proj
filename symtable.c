@@ -1,5 +1,8 @@
-/*
- * Implementae překladače imperativního jazyka IFJ22
+/**
+ * Implementace překladače imperativního jazyka IFJ22
+ *
+ * @file symtable.c
+ * @brief File containing the implementation of defined functions in the symtable.h file
  *
  * @author Matúš Ďurica (xduric06)
  * @author Ivan Mahút (xmahut01)
@@ -11,10 +14,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "returncodes.h"
 
-void symt_init(Symtab table)
+/**
+ * @brief Initializes the hash table of symbols
+ *
+ * @param table Pointer to the hash table
+ * @param ef Pointer to the error flag variable
+ *
+ * @retval INTERNAL_ERR if error occurred
+ */
+void symt_init(Symtab table, int *ef)
 {
-
+    // Checking if NULL was not passed as a pointer to the hash table
     if (table != NULL)
     {
         for (int i = 0; i < SYMTAB_MAX_SIZE; i++)
@@ -24,44 +36,91 @@ void symt_init(Symtab table)
     }
     else
     {
-        fprintf(stderr, "NULL PASSED TO INIT\n");
-        return;
+        *ef = INTERNAL_ERR;
     }
 }
 
-void symt_add(Symtab table, char *id, tab_item_data data)
+/**
+ * @brief Adds symbols to the hash table of symbols
+ *
+ * @param table Pointer to the hash table
+ * @param id Index of the symbol
+ * @param data Struct containing data of the symbol
+ * @param ef Pointer to the error flag variable
+ *
+ * @retval INTERNAL_ERR if error occurred
+ */
+void symt_add(Symtab table, char *id, tab_item_data data, int *ef)
 {
+    // Contains the hashed identificator
     uint32_t index = murmurhash(id, (uint32_t)strlen(id), 0);
-
+    // Checking if NULL was not passed as a pointer to the hash table
     if (table != NULL)
     {
-        table[index] = malloc(2 * sizeof(Symtab_item));
-
+        // Allocating memory
+        table[index] = malloc(sizeof(struct tab_item));
+        // Checking if malloc failed
         if (table[index] == NULL)
         {
-            fprintf(stderr, "ALLOC ERROR\n");
+            *ef = INTERNAL_ERR;
             return;
         }
-
+        // Writing data
         table[index]->data = data;
     }
     else
     {
-        printf("NULL PASSED TO ADD\n");
-        return;
+        *ef = INTERNAL_ERR;
     }
 }
 
-tab_item_data symt_find(Symtab table, char *id)
+/**
+ * @brief Finds the symbol in the hash table and returns its value
+ *
+ * @param table Pointer to the hash table
+ * @param id Index of the symbol
+ * @param data_ret Pointer to the data struct that will contain data of found symbol
+ * @param ef Pointer to the error flag variable
+ *
+ * @retval INTERNAL_ERR if error occurred
+ */
+void symt_find(Symtab table, char *id, tab_item_data *data_ret, int *ef)
 {
-    uint32_t index = murmurhash(id, (uint32_t)strlen(id), 0);
-    return table[index]->data;
-}
-
-void symt_free(Symtab table)
-{
-    for (int i = 0; i < SYMTAB_MAX_SIZE; i++)
+    // Checking if NULL was not passed as a pointer to the hash table
+    if (table != NULL)
     {
-        free(table[i]);
+        // Contains the hashed identificator
+        uint32_t index = murmurhash(id, (uint32_t)strlen(id), 0);
+        *data_ret = table[index]->data;
+    }
+    else
+    {
+        *ef = INTERNAL_ERR;
+    }
+}
+/**
+ * @brief Frees the symbol hash table
+ *
+ * @param table Pointer to the hash table
+ * @param ef Pointer to the error flag variable
+ *
+ * @retval INTERNAL_ERR if error occurred
+ */
+void symt_free(Symtab table, int *ef)
+{
+    // Checking if NULL was not passed as a pointer to the hash table
+    if (table != NULL)
+    {
+        for (int i = 0; i < SYMTAB_MAX_SIZE; i++)
+        {
+            if (table[i] != NULL)
+            {
+                free(table[i]);
+            }
+        }
+    }
+    else
+    {
+        *ef = INTERNAL_ERR;
     }
 }
