@@ -12,6 +12,7 @@
 #include "returncodes.h"
 #include "scanner.h"
 #include <ctype.h>
+#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -435,15 +436,17 @@ void clen_Str(char *Str)
 }
 int check_for_keyword(char *value)
 {
-  //TO DO write other keywords
-  if (strcmp(value, "IF") == 0 || strcmp(value, "ELSE") == 0){
+  if (strcmp(value, "if") == 0 || strcmp(value, "else") == 0 || strcmp(value, "float") == 0 || strcmp(value, "function") == 0 || strcmp(value, "int") == 0 || strcmp(value, "null") == 0 || strcmp(value, "return") == 0 || strcmp(value, "string") == 0 || strcmp(value, "void") == 0 || strcmp(value, "while") == 0)
+  {
     return 1;
-  }else{
+  }
+  else
+  {
     return 0;
   }
 }
 
-//TO DO 
+
 End_States determin_EndState(States Final_sate, char *value)
 {
   End_States end_states;
@@ -459,8 +462,74 @@ End_States determin_EndState(States Final_sate, char *value)
       end_states = ES_ID;
     }
     break;
-
+  case Int:
+    end_states = ES_Int;
+    break;
+  case Float:
+    end_states = ES_Float;
+    break;
+  case Exp2:
+    end_states = ES_Exp2;
+    break;
+  case Add:
+    end_states = ES_Add;
+    break;
+  case Sub:
+    end_states = ES_Sub;
+    break;
+  case Mul:
+    end_states = ES_Mul;
+    break;
+  case Div:
+    end_states = ES_Div;
+    break;
+  case Conc:
+    end_states = ES_Conc;
+    break;
+  case Rol:
+    end_states = ES_Rol;
+    break;
+  case Ror:
+    end_states = ES_Ror;
+    break;
+  case Cul:
+    end_states = ES_Cul;
+    break;
+  case Cur:
+    end_states = ES_Cur;
+    break;
+  case Equ:
+    end_states = ES_Equ1;
+    break;
+  case Equ1:
+    end_states = ES_Equ;
+    break;
+  case Equ2:
+    end_states = ES_Equ2;
+    break;
+  case Less:
+    end_states = ES_Less;
+    break;
+  case Less1:
+    end_states = ES_Less1;
+    break;
+  case Great:
+    end_states = ES_Great;
+    break;
+  case Great1:
+    end_states = ES_Great1;
+    break;
+  case Com1:
+    end_states = ES_Com1;
+    break;
+  case Com4:
+    end_states = ES_Com4;
+    break;
+  case String1:
+    end_states = ES_String1;
+    break;
   default:
+    end_states = ES_ERROR;
     break;
   }
 
@@ -474,7 +543,7 @@ struct TOKEN generate_token()
   States previus_state;
   States current_state = Start;
 
-  End_States end_state;
+  //End_States end_state;
 
   int i = 0;
   int size = 10;
@@ -536,22 +605,54 @@ struct TOKEN generate_token()
   }
   else
   {
-
-    token.End_States = determin_EndState(previus_state, Str);
+    token.end_state = determin_EndState(previus_state, Str);
   }
+  
+  if (token.end_state == ES_Int)
+  {
+    token.Value.intiger = *Str;
 
-  // Delete later
-  // token.End_States = ES_Add;
-  token.Value.intiger = *Str;
-
-  clen_Str(Str);
+  }else if(token.end_state == ES_Float){
+    token.Value.floating = *Str;
+  }else{
+    token.Value.Str = Str;
+    printf("token value %c\n", token.Value.Str[0]);
+  }
+  //clears value for next token
+  
   return token;
 }
+
 void generate_table_of_tokens()
 {
   TOKEN token;
   token = generate_token();
-  printf("Token %d", token.Value.intiger);
+  printf("token value %c\n", token.Value.Str[0]);
+  printf("Token %d\n",token.end_state);
+
+  if (token.end_state == ES_Int)
+  {
+     printf("Token %d", token.Value.intiger);
+
+  }else if(token.end_state == ES_Float){
+     printf("Token %f", token.Value.floating);
+  }else{
+    printf("Token Value-");
+
+    for (int i = 0; i < 10; i++)
+  {
+    
+    if (token.Value.Str[i] != NULL)
+    {
+      printf("%c", token.Value.Str[i]);
+    }
+    else
+    {
+      break;
+    }
+  }
+  }
+  printf("\n");
 }
 
 int main()
