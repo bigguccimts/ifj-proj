@@ -1,4 +1,4 @@
-declare(strict_types=1);
+declare(strict_types=556);
 $str1 = "Toto je nejaky text v programu jazyka IFJ22";
 $str2 = $str1 . ", ktery jeste trochu obohatime";
 write($str1, "\n", $str2, "\n");

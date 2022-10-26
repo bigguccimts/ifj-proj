@@ -12,11 +12,9 @@
 
 #include "returncodes.h"
 #include "scanner.h"
+
 /*
  * @brief Main function of the compiler
  * @return 0 if no errors occured
  */
-/*int main()
-{
-    return ALL_GOOD;
-}*/
+

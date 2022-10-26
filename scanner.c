@@ -21,7 +21,7 @@ States Automat(States current_state, int transition)
   switch (current_state)
   {
   case Start:
-    if (isalnum(transition) || transition == '$' || transition == '_' || transition == '?')
+    if (isalpha(transition) || transition == '$' || transition == '_' || transition == '?')
     {
       current_state = ID;
     }
@@ -93,7 +93,7 @@ States Automat(States current_state, int transition)
     break;
 
   case ID:
-    if (isalnum(transition))
+    if (isalnum(transition) || transition == '_')
     {
       current_state = ID;
     }
@@ -104,7 +104,7 @@ States Automat(States current_state, int transition)
     break;
 
   case Int:
-    if (transition >= '0' || transition <= '9')
+    if (transition >= '0' && transition <= '9')
     {
       current_state = Int;
     }
@@ -434,6 +434,7 @@ void clen_Str(char *Str)
 {
   free(Str);
 }
+
 int check_for_keyword(char *value)
 {
   if (strcmp(value, "if") == 0 || strcmp(value, "else") == 0 || strcmp(value, "float") == 0 || strcmp(value, "function") == 0 || strcmp(value, "int") == 0 || strcmp(value, "null") == 0 || strcmp(value, "return") == 0 || strcmp(value, "string") == 0 || strcmp(value, "void") == 0 || strcmp(value, "while") == 0)
@@ -446,6 +447,12 @@ int check_for_keyword(char *value)
   }
 }
 
+char *resize_Str(char *Str, int size)
+{
+  char *Str2;
+  Str2 = realloc(Str, size * sizeof(int));
+  return Str2;
+}
 
 End_States determin_EndState(States Final_sate, char *value)
 {
@@ -499,10 +506,10 @@ End_States determin_EndState(States Final_sate, char *value)
     end_states = ES_Cur;
     break;
   case Equ:
-    end_states = ES_Equ1;
+    end_states = ES_Equ;
     break;
   case Equ1:
-    end_states = ES_Equ;
+    end_states = ES_Equ1;
     break;
   case Equ2:
     end_states = ES_Equ2;
@@ -538,37 +545,43 @@ End_States determin_EndState(States Final_sate, char *value)
 
 struct TOKEN generate_token()
 {
-
+  // declare structures
   TOKEN token;
   States previus_state;
   States current_state = Start;
-
-  //End_States end_state;
-
+  // define variables
   int i = 0;
-  int size = 10;
+  int size = 1;
   char *Str = NULL;
-  Str = init_Str(Str, 5);
-  // TO DO crete dinamicli alocated array for value for token
+
+  Str = init_Str(Str, size);
+
+  // TO DO prolog represnted in 2 tokens
+  // TO DO end of prolog
   do
   {
     int transition = getchar();
+    //We take another character if we took EOL-\n
+    while (transition == '\n')
+    {
+       transition = getchar();
+    }
+
     previus_state = current_state;
     current_state = Automat(current_state, transition);
 
     if (current_state != ERROR)
     {
-      if (transition != ' ')
+      if (transition != ' ' || transition != '\n')
       {
         Str[i] = transition;
       }
-
-      // TO DO realoc array make it bigger
       int a = i + 1;
+      // if array containing value of token runes out of space doubles in size
       if (a > size - 1)
       {
-        fprintf(stderr, "Too big\n");
-        exit(LEX_ANALYSIS_ERR);
+        size = 2 * size;
+        Str = resize_Str(Str, size);
       }
       // increment index of an Array containing value of token
       i++;
@@ -582,21 +595,7 @@ struct TOKEN generate_token()
       }
     }
   } while (current_state != ERROR);
-  // checks the tokens value delete later
-  printf("Tokens value : ");
-  for (int i = 0; i < size; i++)
-  {
 
-    if (Str[i] != NULL)
-    {
-      printf("%c", Str[i]);
-    }
-    else
-    {
-      break;
-    }
-  }
-  printf("\n");
   // checks if we didn t end in state whitch is not END STATE
   if (previus_state == Exp || previus_state == Exp1 || previus_state == Com || previus_state == Com2 || previus_state == Com3)
   {
@@ -607,55 +606,62 @@ struct TOKEN generate_token()
   {
     token.end_state = determin_EndState(previus_state, Str);
   }
-  
+
   if (token.end_state == ES_Int)
   {
-    token.Value.intiger = *Str;
-
-  }else if(token.end_state == ES_Float){
+    int i;
+    sscanf(Str, "%d", &i);
+    token.Value.intiger = i;
+  }
+  else if (token.end_state == ES_Float)
+  {
     token.Value.floating = *Str;
-  }else{
+  }
+  else
+  {
     token.Value.Str = Str;
-    printf("token value %c\n", token.Value.Str[0]);
   }
-  //clears value for next token
-  
+
   return token;
-}
-
-void generate_table_of_tokens()
-{
-  TOKEN token;
-  token = generate_token();
-  printf("token value %c\n", token.Value.Str[0]);
-  printf("Token %d\n",token.end_state);
-
-  if (token.end_state == ES_Int)
-  {
-     printf("Token %d", token.Value.intiger);
-
-  }else if(token.end_state == ES_Float){
-     printf("Token %f", token.Value.floating);
-  }else{
-    printf("Token Value-");
-
-    for (int i = 0; i < 10; i++)
-  {
-    
-    if (token.Value.Str[i] != NULL)
-    {
-      printf("%c", token.Value.Str[i]);
-    }
-    else
-    {
-      break;
-    }
-  }
-  }
-  printf("\n");
 }
 
 int main()
 {
-  generate_table_of_tokens();
+  TOKEN token;
+
+  for (int i = 0; i < 10; i++)
+  {
+    token = generate_token();
+    printf("Token endstate : %d\n", token.end_state);
+
+    if (token.end_state == ES_Int)
+    {
+      printf("Token Int- %d ", token.Value.intiger);
+    }
+    else if (token.end_state == ES_Float)
+    {
+      printf("Token Flo- %f ", token.Value.floating);
+    }
+    else
+    {
+      printf("Token Str-");
+
+      for (int i = 0; i < 10; i++)
+      {
+
+        if (token.Value.Str[i] != NULL)
+        {
+          printf("%c", token.Value.Str[i]);
+        }
+        else
+        {
+          break;
+        }
+      }
+    }
+    printf("\n");
+    printf("----------------------------\n");
+  }
+
+  return ALL_GOOD;
 }
