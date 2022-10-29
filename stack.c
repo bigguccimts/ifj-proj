@@ -49,29 +49,33 @@ void stack_init(Symstack *stack, int *ef)
  */
 void stack_push(Symstack *stack, Symtab *table, int *ef)
 {
-    if (stack == NULL || table == NULL)
+    if (stack != NULL && table != NULL)
     {
-        *ef = INTERNAL_ERR;
-    }
-
-    stack_item_ptr tmp;
-    tmp = malloc(sizeof(struct stack_item));
-    if (tmp == NULL)
-    {
-        *ef = INTERNAL_ERR;
-    }
-    if (stack->bot == NULL && stack->top == NULL)
-    {
-        tmp->tab = table;
-        tmp->next = NULL;
-        stack->top = tmp;
-        stack->bot = stack->top;
+        stack_item_ptr tmp = malloc(sizeof(struct stack_item));
+        if (tmp != NULL)
+        {
+            if (stack->bot == NULL && stack->top == NULL)
+            {
+                tmp->tab = table;
+                tmp->next = NULL;
+                stack->top = tmp;
+                stack->bot = stack->top;
+            }
+            else
+            {
+                tmp->tab = table;
+                tmp->next = stack->top;
+                stack->top = tmp;
+            }
+        }
+        else
+        {
+            *ef = INTERNAL_ERR;
+        }
     }
     else
     {
-        tmp->tab = table;
-        tmp->next = stack->top;
-        stack->top = tmp;
+        *ef = INTERNAL_ERR;
     }
 }
 
@@ -86,11 +90,14 @@ void stack_push(Symstack *stack, Symtab *table, int *ef)
  */
 void stack_peek(Symstack *stack, stack_item_ptr *retptr, int *ef)
 {
-    if (stack == NULL)
+    if (stack != NULL)
+    {
+        *retptr = stack->top;
+    }
+    else
     {
         *ef = INTERNAL_ERR;
     }
-    *retptr = stack->top;
 }
 
 /**
@@ -121,17 +128,18 @@ void stack_add_data_top(Symstack *stack, char *id, tab_item_data data, int *ef)
  */
 void stack_pop(Symstack *stack, stack_item_ptr *retptr, int *ef)
 {
-    if (stack == NULL)
+    if (stack != NULL)
     {
-        *ef = INTERNAL_ERR;
-    }
-
-    if (stack->top != stack->bot)
-    {
-        stack_item_ptr tmp;
-        tmp = stack->top;
-        stack->top = stack->top->next;
-        *retptr = tmp;
+        if (stack->top != stack->bot)
+        {
+            stack_item_ptr tmp = stack->top;
+            stack->top = stack->top->next;
+            *retptr = tmp;
+        }
+        else
+        {
+            *ef = INTERNAL_ERR;
+        }
     }
     else
     {
@@ -154,7 +162,7 @@ void stack_free(Symstack *stack, int *ef)
     if (stack != NULL)
     {
         stack_item_ptr tmp = NULL;
-        while (1)
+        while (true)
         {
             tmp = stack->top;
             if (stack->top == stack->bot)

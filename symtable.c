@@ -16,6 +16,8 @@
 #include <string.h>
 #include "returncodes.h"
 
+#define HASH(id) (murmurhash(id, (uint32_t)strlen(id), 0))
+
 /**
  * @brief Initializes the hash table of symbols
  *
@@ -52,21 +54,59 @@ void symt_init(Symtab table, int *ef)
  */
 void symt_add(Symtab table, char *id, tab_item_data data, int *ef)
 {
-    // Contains the hashed identificator
-    uint32_t index = murmurhash(id, (uint32_t)strlen(id), 0);
     // Checking if NULL was not passed as a pointer to the hash table
     if (table != NULL)
     {
-        // Allocating memory
-        table[index] = malloc(sizeof(struct tab_item));
-        // Checking if malloc failed
+        // Contains the hashed identificator
+        uint32_t index = HASH(id);
         if (table[index] == NULL)
         {
-            *ef = INTERNAL_ERR;
-            return;
+            // Allocating memory
+            table[index] = malloc(sizeof(struct tab_item));
+            // Checking if malloc failed
+            if (table[index] != NULL)
+            {
+                table[index]->identifier = id;
+                table[index]->data = data;
+            }
+            else
+            {
+                *ef = INTERNAL_ERR;
+            }
         }
-        // Writing data
-        table[index]->data = data;
+        else
+        {
+            if (table[index]->next_item == NULL)
+            {
+                table[index]->next_item = malloc(sizeof(struct tab_item));
+                // Checking if malloc failed
+                if (table[index]->next_item != NULL)
+                {
+                    table[index]->next_item->identifier = id;
+                    table[index]->next_item->data = data;
+                    table[index]->last_item = table[index]->next_item;
+                }
+                else
+                {
+                    *ef = INTERNAL_ERR;
+                }
+            }
+            else
+            {
+                table[index]->last_item->next_item = malloc(sizeof(struct tab_item));
+                // Checking if malloc failed
+                if (table[index]->last_item->next_item != NULL)
+                {
+                    table[index]->last_item->next_item->identifier = id;
+                    table[index]->last_item->next_item->data = data;
+                    table[index]->last_item = table[index]->last_item->next_item;
+                }
+                else
+                {
+                    *ef = INTERNAL_ERR;
+                }
+            }
+        }
     }
     else
     {
@@ -90,8 +130,28 @@ void symt_find(Symtab table, char *id, tab_item_data *data_ret, int *ef)
     if (table != NULL)
     {
         // Contains the hashed identificator
-        uint32_t index = murmurhash(id, (uint32_t)strlen(id), 0);
-        *data_ret = table[index]->data;
+        uint32_t index = HASH(id);
+        if (table[index]->identifier == id)
+        {
+            *data_ret = table[index]->data;
+        }
+        else
+        {
+            struct tab_item *tmp;
+            tmp = table[index]->next_item;
+            while (tmp != table[index]->last_item)
+            {
+                if (tmp->identifier == id)
+                {
+                    *data_ret = tmp->data;
+                    break;
+                }
+                else
+                {
+                    tmp = tmp->next_item;
+                }
+            }
+        }
     }
     else
     {

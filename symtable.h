@@ -39,6 +39,8 @@ typedef enum
 typedef struct
 {
     Data_type type; // Data type of variable/function
+    float num_val;  // Numerical value of variable
+    char *str_val;  // String value of variable
     bool def;       // Variable/function has been defined
 } tab_item_data;
 
@@ -48,9 +50,10 @@ typedef struct
  */
 typedef struct tab_item
 {
-    char *identifier;   // Identifier of variable/function
-    tab_item_data data; // Data struct containing data of the item
-    // struct tab_item *next_item; // pointer to next item in the hash table, probably useless
+    char *identifier;           // Identifier of variable/function
+    tab_item_data data;         // Data struct containing data of the item
+    struct tab_item *next_item; // pointer to next item in the hash table, probably useless
+    struct tab_item *last_item;
 } * Symtab_item;
 
 typedef Symtab_item Symtab[SYMTAB_MAX_SIZE];
