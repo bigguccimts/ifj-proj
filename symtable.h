@@ -14,6 +14,7 @@
 #define HASHTABLE_H
 
 #include "murmurhash.h"
+#include "returncodes.h"
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -38,6 +39,10 @@ typedef enum
 typedef struct
 {
     Data_type type; // Data type of variable/function
+
+    float num_val;  // Numerical value of variable
+    char *str_val;  // String value of variable
+
     bool def;       // Variable/function has been defined
 } tab_item_data;
 
@@ -47,21 +52,22 @@ typedef struct
  */
 typedef struct tab_item
 {
-    char *identifier;   // Identifier of variable/function
-    tab_item_data data; // Data struct containing data of the item
-    // struct tab_item *next_item; // pointer to next item in the hash table, probably useless
+    char *identifier;           // Identifier of variable/function
+    tab_item_data data;         // Data struct containing data of the item
+    struct tab_item *next_item; // pointer to next item in the hash table, probably useless
+    struct tab_item *last_item;
 } * Symtab_item;
 
 typedef Symtab_item Symtab[SYMTAB_MAX_SIZE];
 
-int symt_init(Symtab);
+void symt_init(Symtab, int *);
 
-int symt_add(Symtab, char *, tab_item_data);
+void symt_add(Symtab, char *, tab_item_data, int *);
 
-int symt_find(Symtab, char *, tab_item_data *);
+void symt_find(Symtab, char *, tab_item_data *, int *);
 
 // bool symt_remove(Symtab, char *);
 
-int symt_free(Symtab);
+void symt_free(Symtab, int *);
 
 #endif // HASHTABLE_H
