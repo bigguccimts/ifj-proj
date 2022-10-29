@@ -35,6 +35,7 @@ void symt_init(Symtab table, int *ef)
         {
             table[i] = NULL;
         }
+        return ALL_GOOD;
     }
     else
     {
@@ -120,6 +121,7 @@ void symt_add(Symtab table, char *id, tab_item_data data, int *ef)
  * @param table Pointer to the hash table
  * @param id Index of the symbol
  * @param data_ret Pointer to the data struct that will contain data of found symbol
+
  * @param ef Pointer to the error flag variable
  *
  * @retval INTERNAL_ERR if error occurred
@@ -162,6 +164,7 @@ void symt_find(Symtab table, char *id, tab_item_data *data_ret, int *ef)
  * @brief Frees the symbol hash table
  *
  * @param table Pointer to the hash table
+
  * @param ef Pointer to the error flag variable
  *
  * @retval INTERNAL_ERR if error occurred
@@ -178,6 +181,7 @@ void symt_free(Symtab table, int *ef)
                 free(table[i]);
             }
         }
+
     }
     else
     {

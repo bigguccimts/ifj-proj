@@ -39,8 +39,10 @@ typedef enum
 typedef struct
 {
     Data_type type; // Data type of variable/function
+
     float num_val;  // Numerical value of variable
     char *str_val;  // String value of variable
+
     bool def;       // Variable/function has been defined
 } tab_item_data;
 
