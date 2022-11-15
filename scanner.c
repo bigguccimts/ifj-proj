@@ -15,7 +15,13 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
+// Global variables
+bool IS_PROLOG = false;
+
+// TO DO. Dynamicly alocate strings
+// TO DO. Repair Strings - (,) - missing from automat
 States Automat(States current_state, int transition)
 {
   switch (current_state)
@@ -79,11 +85,20 @@ States Automat(States current_state, int transition)
     }
     else if (transition == '"')
     {
-      current_state = Equ;
+      current_state = String;
     }
     else if (transition == ' ')
     {
       current_state = Start;
+    }
+    else if (transition == ';')
+    {
+      current_state = Sem;
+    }
+    else if (transition == ',')
+    {
+      printf("1\n");
+      current_state = Col;
     }
     else
     {
@@ -181,6 +196,15 @@ States Automat(States current_state, int transition)
     break;
 
   case Mul:
+    current_state = ERROR;
+    break;
+
+  case Sem:
+    current_state = ERROR;
+    break;
+
+  case Col:
+    printf("2\n");
     current_state = ERROR;
     break;
 
@@ -322,11 +346,12 @@ States Automat(States current_state, int transition)
     break;
 
   case String:
-    if (transition >= 32 && transition <= 126 && transition != 34 && transition != 92)
+
+    if (transition >= 32 && transition <= 126 && transition != '"' && transition != 92)
     {
       current_state = String;
     }
-    else if (transition == 34)
+    else if (transition == '"')
     {
       current_state = String1;
     }
@@ -542,29 +567,80 @@ End_States determin_EndState(States Final_sate, char *value)
 
   return end_states;
 }
+int size = 1;
+
+bool check_prolog()
+{
+  bool result = false;
+  int transition;
+  char In_stream;
+  char Prolog[32] = "<?php declare(strict_types=556);";
+  do
+  {
+    transition = getchar();
+  } while (transition == ' ');
+
+  // give back char posible < already loaded
+  ungetc(transition, stdin);
+
+  for (int i = 0; i < 31; i++)
+  {
+    In_stream = getchar();
+     while (In_stream == '\n')
+    {
+      In_stream = getchar();
+    }
+    if (Prolog[i] != In_stream)
+    {
+      return result;
+    }
+  }
+
+  result = true;
+
+  return result;
+}
 
 struct TOKEN generate_token()
 {
+
   // declare structures
   TOKEN token;
   States previus_state;
   States current_state = Start;
   // define variables
   int i = 0;
-  int size = 1;
+
   char *Str = NULL;
 
   Str = init_Str(Str, size);
 
+  // prolog check
+  // will be done only once when first getToken is called
+  // wrong prolog will result in exit of program
+  if (!IS_PROLOG)
+  {
+    if (!check_prolog())
+    {
+      fprintf(stderr, "Error ocured in class scanner.c Prolog\n");
+      exit(LEX_ANALYSIS_ERR);
+    }
+    else
+    {
+      IS_PROLOG = true;
+    }
+  }
+
   // TO DO prolog represnted in 2 tokens
   // TO DO end of prolog
+
   do
   {
     int transition = getchar();
-    //We take another character if we took EOL-\n
+    // We take another character if we took EOL-\n
     while (transition == '\n')
     {
-       transition = getchar();
+      transition = getchar();
     }
 
     previus_state = current_state;
@@ -597,7 +673,7 @@ struct TOKEN generate_token()
   } while (current_state != ERROR);
 
   // checks if we didn t end in state whitch is not END STATE
-  if (previus_state == Exp || previus_state == Exp1 || previus_state == Com || previus_state == Com2 || previus_state == Com3)
+  if (previus_state == Exp || previus_state == Exp1 || previus_state == Com || previus_state == Com2 || previus_state == Com3 || previus_state == Equ1)
   {
     fprintf(stderr, "Error ocured in class scanner.c\n");
     exit(LEX_ANALYSIS_ERR);
@@ -629,8 +705,9 @@ int main()
 {
   TOKEN token;
 
-  for (int i = 0; i < 10; i++)
+  for (int i = 0; i < 100; i++)
   {
+
     token = generate_token();
     printf("Token endstate : %d\n", token.end_state);
 
@@ -646,7 +723,7 @@ int main()
     {
       printf("Token Str-");
 
-      for (int i = 0; i < 10; i++)
+      for (int i = 0; i < size; i++)
       {
 
         if (token.Value.Str[i] != NULL)

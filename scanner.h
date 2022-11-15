@@ -51,6 +51,8 @@ typedef enum
     Esc3,
     Esc4,
 
+    Sem,
+    Col,
     ERROR,
 } States;
 
