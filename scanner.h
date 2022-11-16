@@ -53,6 +53,7 @@ typedef enum
 
     Sem,
     Col,
+
     ERROR,
 } States;
 
@@ -82,6 +83,7 @@ typedef enum
     ES_Com4,
     ES_String1,
     ES_KEY_WORD,
+    ES_Prolog,
     ES_ERROR,
 } End_States;
 

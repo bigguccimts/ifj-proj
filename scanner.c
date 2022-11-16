@@ -18,10 +18,13 @@
 #include <stdbool.h>
 
 // Global variables
-bool IS_PROLOG = false;
-
-// TO DO. Dynamicly alocate strings
-// TO DO. Repair Strings - (,) - missing from automat
+bool IS_PROLOG = false; //true when input file contains prolog
+int size = 1; // is size of token.value.str so we can dynamicly double it if we have long string
+// TO DO prolog represnted in 2 tokens -- In the end is represented in 1 and is checked here. - DONE
+// TO DO end of prolog
+// TO DO. Dynamicly alocate strings (String only size up mby size down would be good to add) - DONE
+// TO DO. Repair Strings - (,) - missing from automat - DONE
+// TO DO. Gabika is redoing automat schema so need to do aditional tokens (cca 4 new) 30 mins.
 States Automat(States current_state, int transition)
 {
   switch (current_state)
@@ -97,7 +100,6 @@ States Automat(States current_state, int transition)
     }
     else if (transition == ',')
     {
-      printf("1\n");
       current_state = Col;
     }
     else
@@ -204,7 +206,6 @@ States Automat(States current_state, int transition)
     break;
 
   case Col:
-    printf("2\n");
     current_state = ERROR;
     break;
 
@@ -567,7 +568,7 @@ End_States determin_EndState(States Final_sate, char *value)
 
   return end_states;
 }
-int size = 1;
+
 
 bool check_prolog()
 {
@@ -586,7 +587,7 @@ bool check_prolog()
   for (int i = 0; i < 31; i++)
   {
     In_stream = getchar();
-     while (In_stream == '\n')
+    while (In_stream == '\n')
     {
       In_stream = getchar();
     }
@@ -610,7 +611,7 @@ struct TOKEN generate_token()
   States current_state = Start;
   // define variables
   int i = 0;
-
+  
   char *Str = NULL;
 
   Str = init_Str(Str, size);
@@ -620,6 +621,7 @@ struct TOKEN generate_token()
   // wrong prolog will result in exit of program
   if (!IS_PROLOG)
   {
+    
     if (!check_prolog())
     {
       fprintf(stderr, "Error ocured in class scanner.c Prolog\n");
@@ -628,84 +630,90 @@ struct TOKEN generate_token()
     else
     {
       IS_PROLOG = true;
+      char Prolog[32] = "<?php declare(strict_types=556);";
+      token.Value.Str = Prolog;
+      token.end_state = ES_Prolog;
+      return token;
     }
   }
-
-  // TO DO prolog represnted in 2 tokens
-  // TO DO end of prolog
-
-  do
+  else
   {
-    int transition = getchar();
-    // We take another character if we took EOL-\n
-    while (transition == '\n')
-    {
-      transition = getchar();
-    }
 
-    previus_state = current_state;
-    current_state = Automat(current_state, transition);
+    
 
-    if (current_state != ERROR)
+    do
     {
-      if (transition != ' ' || transition != '\n')
+      int transition = getchar();
+      // We take another character if we took EOL-\n
+      while (transition == '\n')
       {
-        Str[i] = transition;
+        transition = getchar();
       }
-      int a = i + 1;
-      // if array containing value of token runes out of space doubles in size
-      if (a > size - 1)
+
+      previus_state = current_state;
+      current_state = Automat(current_state, transition);
+
+      if (current_state != ERROR)
       {
-        size = 2 * size;
-        Str = resize_Str(Str, size);
+        if (transition != ' ' || transition != '\n')
+        {
+          Str[i] = transition;
+        }
+        int a = i + 1;
+        // if array containing value of token runes out of space doubles in size
+        if (a > size - 1)
+        {
+          size = 2 * size;
+          Str = resize_Str(Str, size);
+        }
+        // increment index of an Array containing value of token
+        i++;
       }
-      // increment index of an Array containing value of token
-      i++;
+      else
+      {
+        // unused char is puted back on strem w/o empty space
+        if (transition != ' ')
+        {
+          ungetc(transition, stdin);
+        }
+      }
+    } while (current_state != ERROR);
+
+    // checks if we didn t end in state whitch is not END STATE
+    if (previus_state == Exp || previus_state == Exp1 || previus_state == Com || previus_state == Com2 || previus_state == Com3 || previus_state == Equ1)
+    {
+      fprintf(stderr, "Error ocured in class scanner.c\n");
+      exit(LEX_ANALYSIS_ERR);
     }
     else
     {
-      // unused char is puted back on strem w/o empty space
-      if (transition != ' ')
-      {
-        ungetc(transition, stdin);
-      }
+      token.end_state = determin_EndState(previus_state, Str);
     }
-  } while (current_state != ERROR);
 
-  // checks if we didn t end in state whitch is not END STATE
-  if (previus_state == Exp || previus_state == Exp1 || previus_state == Com || previus_state == Com2 || previus_state == Com3 || previus_state == Equ1)
-  {
-    fprintf(stderr, "Error ocured in class scanner.c\n");
-    exit(LEX_ANALYSIS_ERR);
-  }
-  else
-  {
-    token.end_state = determin_EndState(previus_state, Str);
-  }
+    if (token.end_state == ES_Int)
+    {
+      int i;
+      sscanf(Str, "%d", &i);
+      token.Value.intiger = i;
+    }
+    else if (token.end_state == ES_Float)
+    {
+      token.Value.floating = *Str;
+    }
+    else
+    {
+      token.Value.Str = Str;
+    }
 
-  if (token.end_state == ES_Int)
-  {
-    int i;
-    sscanf(Str, "%d", &i);
-    token.Value.intiger = i;
+    return token;
   }
-  else if (token.end_state == ES_Float)
-  {
-    token.Value.floating = *Str;
-  }
-  else
-  {
-    token.Value.Str = Str;
-  }
-
-  return token;
 }
 
 int main()
 {
   TOKEN token;
 
-  for (int i = 0; i < 100; i++)
+  for (int i = 0; i < 10; i++)
   {
 
     token = generate_token();
