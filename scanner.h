@@ -34,6 +34,11 @@ typedef enum
     Equ,
     Equ1,
     Equ2,
+
+    Notequ,
+    Notequ1,
+    Notequ2,
+
     Less,
     Less1,
     Great,
@@ -50,6 +55,9 @@ typedef enum
     Esc2,
     Esc3,
     Esc4,
+    
+    EOP,
+    EOP2,
 
     Sem,
     Col,
@@ -72,9 +80,15 @@ typedef enum
     ES_Ror,
     ES_Cul,
     ES_Cur,
+    
     ES_Equ,
     ES_Equ1,
     ES_Equ2,
+
+    ES_Notequ,
+    ES_Notequ1,
+    ES_Notequ2,
+
     ES_Less,
     ES_Less1,
     ES_Great,
@@ -84,6 +98,9 @@ typedef enum
     ES_String1,
     ES_KEY_WORD,
     ES_Prolog,
+
+    ES_EOP2,
+
     ES_ERROR,
 } End_States;
 

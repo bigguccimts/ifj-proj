@@ -16,15 +16,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-
+// EOP stands for END OF PROGRAM.
 // Global variables
-bool IS_PROLOG = false; //true when input file contains prolog
-int size = 1; // is size of token.value.str so we can dynamicly double it if we have long string
-// TO DO prolog represnted in 2 tokens -- In the end is represented in 1 and is checked here. - DONE
-// TO DO end of prolog
-// TO DO. Dynamicly alocate strings (String only size up mby size down would be good to add) - DONE
-// TO DO. Repair Strings - (,) - missing from automat - DONE
-// TO DO. Gabika is redoing automat schema so need to do aditional tokens (cca 4 new) 30 mins.
+bool IS_PROLOG = false; // true when input file contains prolog
+int size = 1;           // is size of token.value.str so we can dynamicly double it if we have long string
+
+
+// TO DO comma , - DONE
+//  TO DO !== && === -DONE
+//  TO DO coments - DONE
+//  TO DO prolog represnted in 2 tokens -- In the end is represented in 1 and is checked here. - DONE
+//  TO DO end of program - DONE only for ?>
+//  TO DO end of program without ?>
+//  TO DO. Dynamicly alocate strings (String only size up mby size down would be good to add) - DONE
+//  TO DO. Repair Strings - (,) - missing from automat - DONE
+//  TO DO. Gabika is redoing automat schema so need to do aditional tokens (cca 4 new) 30 mins. -DONE
 States Automat(States current_state, int transition)
 {
   switch (current_state)
@@ -78,6 +84,10 @@ States Automat(States current_state, int transition)
     {
       current_state = Equ;
     }
+    else if (transition == '!')
+    {
+      current_state = Notequ1;
+    }
     else if (transition == '<')
     {
       current_state = Less;
@@ -114,8 +124,10 @@ States Automat(States current_state, int transition)
     {
       current_state = ID;
     }
-    else
+    else if(transition == '>') 
     {
+      current_state = EOP2;
+    }else{
       current_state = ERROR;
     }
     break;
@@ -298,6 +310,32 @@ States Automat(States current_state, int transition)
     current_state = ERROR;
     break;
 
+  case Notequ:
+    if (transition == '=')
+    {
+      current_state = Notequ1;
+    }
+    else
+    {
+      current_state = ERROR;
+    }
+    break;
+
+  case Notequ1:
+    if (transition == '=')
+    {
+      current_state = Notequ2;
+    }
+    else
+    {
+      current_state = ERROR;
+    }
+    break;
+
+  case Notequ2:
+    current_state = ERROR;
+    break;
+
   case Equ:
     if (transition == '=')
     {
@@ -310,7 +348,7 @@ States Automat(States current_state, int transition)
     break;
 
   case Equ1:
-    if (transition == '=' || transition == '!')
+    if (transition == '=')
     {
       current_state = Equ2;
     }
@@ -432,6 +470,20 @@ States Automat(States current_state, int transition)
       current_state = ERROR;
     }
     break;
+  case EOP:
+    if (transition == '>')
+    {
+      current_state = EOP2;
+    }
+    else
+    {
+      current_state = ERROR;
+    }
+    break;
+
+  case EOP2:
+    current_state = ERROR;
+    break;
 
   default:
     current_state = ERROR;
@@ -540,6 +592,15 @@ End_States determin_EndState(States Final_sate, char *value)
   case Equ2:
     end_states = ES_Equ2;
     break;
+  case Notequ:
+    end_states = ES_Notequ;
+    break;
+  case Notequ1:
+    end_states = ES_Notequ1;
+    break;
+  case Notequ2:
+    end_states = ES_Notequ2;
+    break;
   case Less:
     end_states = ES_Less;
     break;
@@ -561,6 +622,9 @@ End_States determin_EndState(States Final_sate, char *value)
   case String1:
     end_states = ES_String1;
     break;
+  case EOP2:
+    end_states = ES_EOP2;
+    break;
   default:
     end_states = ES_ERROR;
     break;
@@ -568,7 +632,6 @@ End_States determin_EndState(States Final_sate, char *value)
 
   return end_states;
 }
-
 
 bool check_prolog()
 {
@@ -611,7 +674,7 @@ struct TOKEN generate_token()
   States current_state = Start;
   // define variables
   int i = 0;
-  
+
   char *Str = NULL;
 
   Str = init_Str(Str, size);
@@ -621,7 +684,7 @@ struct TOKEN generate_token()
   // wrong prolog will result in exit of program
   if (!IS_PROLOG)
   {
-    
+
     if (!check_prolog())
     {
       fprintf(stderr, "Error ocured in class scanner.c Prolog\n");
@@ -638,8 +701,6 @@ struct TOKEN generate_token()
   }
   else
   {
-
-    
 
     do
     {
@@ -680,7 +741,7 @@ struct TOKEN generate_token()
     } while (current_state != ERROR);
 
     // checks if we didn t end in state whitch is not END STATE
-    if (previus_state == Exp || previus_state == Exp1 || previus_state == Com || previus_state == Com2 || previus_state == Com3 || previus_state == Equ1)
+    if (previus_state == Exp || previus_state == Exp1 || previus_state == Com || previus_state == Com2 || previus_state == Com3 || previus_state == Equ1 || previus_state == Notequ1)
     {
       fprintf(stderr, "Error ocured in class scanner.c\n");
       exit(LEX_ANALYSIS_ERR);
@@ -713,8 +774,10 @@ int main()
 {
   TOKEN token;
 
-  for (int i = 0; i < 10; i++)
-  {
+ do
+ {
+  /* code */
+
 
     token = generate_token();
     printf("Token endstate : %d\n", token.end_state);
@@ -746,7 +809,16 @@ int main()
     }
     printf("\n");
     printf("----------------------------\n");
+   } while (token.end_state != ES_EOP2);
+  
+  
+  if (token.end_state)
+  {
+    printf("----------------------------\n");
+    printf("----WE loaded all tokens----\n");
+    printf("----------------------------\n");
   }
+  
 
   return ALL_GOOD;
 }
