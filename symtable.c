@@ -35,7 +35,6 @@ void symt_init(Symtab table, int *ef)
         {
             table[i] = NULL;
         }
-        return ALL_GOOD;
     }
     else
     {
@@ -63,12 +62,14 @@ void symt_add(Symtab table, char *id, tab_item_data data, int *ef)
         if (table[index] == NULL)
         {
             // Allocating memory
-            table[index] = malloc(sizeof(struct tab_item));
+            Symtab_item tmp = malloc(sizeof(struct tab_item));
             // Checking if malloc failed
-            if (table[index] != NULL)
+            if (tmp != NULL)
             {
-                table[index]->identifier = id;
-                table[index]->data = data;
+                tmp->identifier = id;
+                tmp->data = data;
+                tmp->next_item = table[index];
+                table[index] = tmp;
             }
             else
             {
@@ -77,35 +78,10 @@ void symt_add(Symtab table, char *id, tab_item_data data, int *ef)
         }
         else
         {
-            if (table[index]->next_item == NULL)
+            // Rewriting data on the same id
+            if (!strcmp(table[index]->identifier, id))
             {
-                table[index]->next_item = malloc(sizeof(struct tab_item));
-                // Checking if malloc failed
-                if (table[index]->next_item != NULL)
-                {
-                    table[index]->next_item->identifier = id;
-                    table[index]->next_item->data = data;
-                    table[index]->last_item = table[index]->next_item;
-                }
-                else
-                {
-                    *ef = INTERNAL_ERR;
-                }
-            }
-            else
-            {
-                table[index]->last_item->next_item = malloc(sizeof(struct tab_item));
-                // Checking if malloc failed
-                if (table[index]->last_item->next_item != NULL)
-                {
-                    table[index]->last_item->next_item->identifier = id;
-                    table[index]->last_item->next_item->data = data;
-                    table[index]->last_item = table[index]->last_item->next_item;
-                }
-                else
-                {
-                    *ef = INTERNAL_ERR;
-                }
+                table[index]->data = data;
             }
         }
     }
@@ -131,28 +107,15 @@ void symt_find(Symtab table, char *id, tab_item_data *data_ret, int *ef)
     // Checking if NULL was not passed as a pointer to the hash table
     if (table != NULL)
     {
-        // Contains the hashed identificator
-        uint32_t index = HASH(id);
-        if (table[index]->identifier == id)
+        Symtab_item tmp = table[HASH(id)];
+        while (tmp)
         {
-            *data_ret = table[index]->data;
-        }
-        else
-        {
-            struct tab_item *tmp;
-            tmp = table[index]->next_item;
-            while (tmp != table[index]->last_item)
+            if (!strcmp(id, tmp->identifier))
             {
-                if (tmp->identifier == id)
-                {
-                    *data_ret = tmp->data;
-                    break;
-                }
-                else
-                {
-                    tmp = tmp->next_item;
-                }
+                *data_ret = tmp->data;
+                break;
             }
+            tmp = tmp->next_item;
         }
     }
     else
@@ -174,14 +137,18 @@ void symt_free(Symtab table, int *ef)
     // Checking if NULL was not passed as a pointer to the hash table
     if (table != NULL)
     {
+        Symtab_item tmp, del;
         for (int i = 0; i < SYMTAB_MAX_SIZE; i++)
         {
-            if (table[i] != NULL)
+            tmp = table[i];
+            del = NULL;
+            while (tmp)
             {
-                free(table[i]);
+                del = tmp;
+                tmp = tmp->next_item;
+                free(del);
             }
         }
-
     }
     else
     {
