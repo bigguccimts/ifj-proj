@@ -52,25 +52,18 @@ void stack_push(Symstack *stack, Symtab *table, int *ef)
     if (stack != NULL && table != NULL)
     {
         stack_item_ptr tmp = malloc(sizeof(struct stack_item));
-        if (tmp != NULL)
+        if (stack->bot == NULL && stack->top == NULL)
         {
-            if (stack->bot == NULL && stack->top == NULL)
-            {
-                tmp->tab = table;
-                tmp->next = NULL;
-                stack->top = tmp;
-                stack->bot = stack->top;
-            }
-            else
-            {
-                tmp->tab = table;
-                tmp->next = stack->top;
-                stack->top = tmp;
-            }
+            tmp->tab = table;
+            tmp->next = NULL;
+            stack->top = tmp;
+            stack->bot = stack->top;
         }
         else
         {
-            *ef = INTERNAL_ERR;
+            tmp->tab = table;
+            tmp->next = stack->top;
+            stack->top = tmp;
         }
     }
     else
@@ -78,7 +71,6 @@ void stack_push(Symstack *stack, Symtab *table, int *ef)
         *ef = INTERNAL_ERR;
     }
 }
-
 /**
  * @brief Peeks into the top item and returns its hash table
  *
@@ -99,46 +91,42 @@ void stack_peek(Symstack *stack, stack_item_ptr *retptr, int *ef)
         *ef = INTERNAL_ERR;
     }
 }
-
 /**
- * @brief Adds data to the top item of the table
+ * @brief Pops the top item and moves it to auxiliary stack
  *
- * @param stack Pointer to the stack
- * @param id Index of the symbol
- * @param data Struct containing data of the symbol
- * @param ef Pointer to the error flag variable
- *
- * @retval INTERNAL_ERR if error occurred
- */
-void stack_add_data_top(Symstack *stack, char *id, tab_item_data data, int *ef)
-{
-    stack_item_ptr rettab = NULL;
-    stack_peek(stack, &rettab, ef);
-    symt_add(*rettab->tab, id, data, ef);
-}
-
-/**
- * @brief Pops the top item and returns its hash table
- *
- * @param stack Pointer to the stack
+ * @param source Pointer to the source stack
+ * @param destination Pointer to the destination stack
  * @param retptr Pointer to the variable where returned hash table pointer will be
+ * @param aux Specifies, whether the source stack is the main one or the aux one.TRUE == aux FALSE == main
  * @param ef Pointer to the error flag variable
  *
  * @retval INTERNAL_ERR if error occurred
  */
-void stack_pop(Symstack *stack, stack_item_ptr *retptr, int *ef)
+void stack_pop(Symstack *source, Symstack *destination, bool aux, int *ef)
 {
-    if (stack != NULL)
+    if (source != NULL)
     {
-        if (stack->top != stack->bot)
+        if (aux == true)
         {
-            stack_item_ptr tmp = stack->top;
-            stack->top = stack->top->next;
-            *retptr = tmp;
+            stack_push(destination, source->top->tab, ef);
+            stack_item_ptr tmp = source->top;
+            source->top = source->top->next;
+            free(tmp);
         }
         else
         {
-            *ef = INTERNAL_ERR;
+            if (source->top != source->bot)
+            {
+                stack_push(destination, source->top->tab, ef);
+                stack_item_ptr tmp = source->top;
+                source->top = source->top->next;
+                free(tmp);
+            }
+            else
+            {
+                // printf("debug\n");
+                *ef = INTERNAL_ERR;
+            }
         }
     }
     else
@@ -146,7 +134,6 @@ void stack_pop(Symstack *stack, stack_item_ptr *retptr, int *ef)
         *ef = INTERNAL_ERR;
     }
 }
-
 /**
  * @brief Frees the last item representing local scope.
  * Only used once in the whole code!
@@ -159,7 +146,7 @@ void stack_pop(Symstack *stack, stack_item_ptr *retptr, int *ef)
  */
 void stack_free(Symstack *stack, int *ef)
 {
-    if (stack != NULL)
+    if (stack->top != NULL)
     {
         stack_item_ptr tmp = NULL;
         while (true)
@@ -178,26 +165,6 @@ void stack_free(Symstack *stack, int *ef)
                 free(tmp);
             }
         }
-    }
-    else
-    {
-        *ef = INTERNAL_ERR;
-    }
-}
-
-/**
- * @brief Aux function used only after popping
- *
- * @param tab Pointer to the symbol table
- * @param ef Pointer to the error flag variable
- *
- * @retval INTERNAL_ERR if error occurred
- */
-void stack_free_after_pop(Symtab **tab, int *ef)
-{
-    if (*tab != NULL)
-    {
-        free(tab);
     }
     else
     {
