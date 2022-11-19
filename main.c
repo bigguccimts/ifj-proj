@@ -1,4 +1,4 @@
-/**
+/*
  * Implementace překladače imperativního jazyka IFJ22
  *
  * @file main.c
@@ -11,10 +11,7 @@
  */
 
 #include "returncodes.h"
-#include "symtable.h"
-#include "stack.h"
-#include <stdio.h>
-#include <stdlib.h>
+
 /*
  * @brief Main function of the compiler
  * @return 0 if no errors occured
