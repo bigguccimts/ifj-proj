@@ -42,13 +42,9 @@ void stack_init(Symstack *, int *);
 
 void stack_push(Symstack *, Symtab *, int *);
 
-void stack_pop(Symstack *, stack_item_ptr *, int *);
+void stack_pop(Symstack *, Symstack *, bool, int *);
 
 void stack_peek(Symstack *, stack_item_ptr *, int *);
-
-void stack_add_data_top(Symstack *, char *, tab_item_data, int *);
-
-void stack_free_after_pop(Symtab **, int *);
 
 void stack_free(Symstack *, int *);
 
