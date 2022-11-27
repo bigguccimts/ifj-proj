@@ -65,6 +65,7 @@ typedef enum
     EOP2,
 
     Sem,
+    Comm,
     Col,
 
     ERROR,
@@ -103,7 +104,8 @@ typedef enum
     ES_String1,
     ES_KEY_WORD,
     ES_Prolog,
-
+    ES_Comm,
+    ES_Col,
     ES_EOP2,
 
     ES_ERROR,

@@ -109,6 +109,9 @@ States Automat(States current_state, int transition)
 		}
 		else if (transition == ',')
 		{
+			current_state = Comm;
+		}else if (transition == ':')
+		{
 			current_state = Col;
 		}
 		else
@@ -215,6 +218,10 @@ States Automat(States current_state, int transition)
 		break;
 
 	case Sem:
+		current_state = ERROR;
+		break;
+
+	case Comm:
 		current_state = ERROR;
 		break;
 
@@ -625,6 +632,12 @@ End_States determin_EndState(States Final_sate, char *value)
 		break;
 	case EOP2:
 		end_states = ES_EOP2;
+		break;
+	case Com:
+		end_states = ES_Comm;
+		break;
+	case Col:
+		end_states = ES_Col;
 		break;
 	default:
 		end_states = ES_ERROR;
