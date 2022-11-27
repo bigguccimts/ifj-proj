@@ -52,7 +52,7 @@ typedef struct tab_item
 {
     char *identifier;           // Identifier of variable/function
     tab_item_data data;         // Data struct containing data of the item
-    struct tab_item *next_item; // pointer to next item in the hash table, probably useless
+    struct tab_item *next_item; // Pointer to collision
 } * Symtab_item;
 
 typedef Symtab_item Symtab[SYMTAB_MAX_SIZE];
