@@ -15,22 +15,12 @@
 
 #include "murmurhash.h"
 #include "returncodes.h"
+#include "list.h"
+#include "datatypes.h"
 #include <stdbool.h>
 #include <stdint.h>
 
 #define SYMTAB_MAX_SIZE 256 // Max size of the symbol table - keep it in 2^n format!
-
-/**
- * @brief Contains data types in strings, just for ease of use
- *
- */
-typedef enum
-{
-    INT_T,
-    FLOAT_T,
-    STRING_T,
-    BOOL_T
-} Data_type;
 
 /**
  * @brief Struct containg data of 1 item in the symbol table
@@ -42,6 +32,7 @@ typedef struct
     float num_val;  // Numerical value of variable
     char *str_val;  // String value of variable
     bool def;       // Variable/function has been defined
+    List *params;   // List containing params of functions
 } tab_item_data;
 
 /**
@@ -62,8 +53,6 @@ void symt_init(Symtab, int *);
 void symt_add(Symtab, char *, tab_item_data, int *);
 
 void symt_find(Symtab, char *, tab_item_data *, int *);
-
-// bool symt_remove(Symtab, char *);
 
 void symt_free(Symtab, int *);
 

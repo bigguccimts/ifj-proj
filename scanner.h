@@ -9,9 +9,14 @@
  * @author Dušan Slúka (xsluka00)
  * @author Gabriela Paganíková (xpagan00)
  */
+#ifndef SCANNER_H
+#define SCANNER_H
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
+
+#define DYN_STR_SIZE 1
 
 typedef enum
 {
@@ -55,7 +60,7 @@ typedef enum
     Esc2,
     Esc3,
     Esc4,
-    
+
     EOP,
     EOP2,
 
@@ -80,7 +85,7 @@ typedef enum
     ES_Ror,
     ES_Cul,
     ES_Cur,
-    
+
     ES_Equ,
     ES_Equ1,
     ES_Equ2,
@@ -114,6 +119,23 @@ typedef struct TOKEN
         int intiger;
         char *Str;
     } Value;
-    //size_t value;
+    // size_t value;
 } TOKEN;
 
+States Automat(States, int);
+
+char *init_Str(char *, int);
+
+void clean_Str(char *);
+
+int check_for_keyword(char *);
+
+char *resize_Str(char *, int);
+
+End_States determin_EndState(States, char *);
+
+bool check_prolog();
+
+struct TOKEN generate_token();
+
+#endif // SCANNER_H

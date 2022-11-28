@@ -11,10 +11,11 @@
  */
 
 #include "symtable.h"
+#include "list.h"
+#include "returncodes.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "returncodes.h"
 
 #define HASH(id) (murmurhash(id, (uint32_t)strlen(id), 0))
 
@@ -34,6 +35,7 @@ void symt_init(Symtab table, int *ef)
         for (int i = 0; i < SYMTAB_MAX_SIZE; i++)
         {
             table[i] = NULL;
+            // list_init(table[i]->data.params);
         }
     }
     else
@@ -127,7 +129,6 @@ void symt_find(Symtab table, char *id, tab_item_data *data_ret, int *ef)
  * @brief Frees the symbol hash table
  *
  * @param table Pointer to the hash table
-
  * @param ef Pointer to the error flag variable
  *
  * @retval INTERNAL_ERR if error occurred
@@ -146,6 +147,7 @@ void symt_free(Symtab table, int *ef)
             {
                 del = tmp;
                 tmp = tmp->next_item;
+                list_dispose(del->data.params);
                 free(del);
             }
         }
