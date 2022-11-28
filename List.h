@@ -3,7 +3,9 @@
 
 typedef struct ListElement {
 	/** Užitečná data. */
-    int data;
+    INT_T;
+	FLOAT_T;
+	STRING_T;
 	/** Ukazatel na následující prvek seznamu. */
     struct ListElement *nextElement;
 } *ListElementPtr;
