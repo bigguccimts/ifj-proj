@@ -23,10 +23,10 @@ bool IS_PROLOG = false;	 // true when input file contains prolog
 int size = DYN_STR_SIZE; // is size of token.value.str so we can dynamicly double it if we have long string
 /**
  * @brief KA automat for diferent tokens.
- * 
- * @param current_state 
- * @param transition 
- * @return States 
+ *
+ * @param current_state
+ * @param transition
+ * @return States
  */
 States Automat(States current_state, int transition)
 {
@@ -108,7 +108,8 @@ States Automat(States current_state, int transition)
 		else if (transition == ',')
 		{
 			current_state = Comm;
-		}else if (transition == ':')
+		}
+		else if (transition == ':')
 		{
 			current_state = Col;
 		}
@@ -500,10 +501,10 @@ States Automat(States current_state, int transition)
 }
 /**
  * @brief initialize dynamic Str
- * 
- * @param Str 
- * @param size 
- * @return char* 
+ *
+ * @param Str
+ * @param size
+ * @return char*
  */
 char *init_Str(char *Str, int size)
 {
@@ -521,18 +522,18 @@ char *init_Str(char *Str, int size)
 }
 /**
  * @brief Frees space after dynamic Str.
- * 
- * @param Str 
+ *
+ * @param Str
  */
 void clean_Str(char *Str)
 {
 	free(Str);
 }
 /**
- * @brief checks if string is keyword 
- * 
- * @param value 
- * @return int 
+ * @brief checks if string is keyword
+ *
+ * @param value
+ * @return int
  */
 int check_for_keyword(char *value)
 {
@@ -547,10 +548,10 @@ int check_for_keyword(char *value)
 }
 /**
  * @brief changes size of allocated space for dynamic Str
- * 
- * @param Str 
- * @param size 
- * @return char* 
+ *
+ * @param Str
+ * @param size
+ * @return char*
  */
 char *resize_Str(char *Str, int size)
 {
@@ -560,10 +561,10 @@ char *resize_Str(char *Str, int size)
 }
 /**
  * @brief Choses end state for token
- * 
- * @param Final_sate 
- * @param value 
- * @return End_States 
+ *
+ * @param Final_sate
+ * @param value
+ * @return End_States
  */
 End_States determin_EndState(States Final_sate, char *value)
 {
@@ -672,17 +673,34 @@ End_States determin_EndState(States Final_sate, char *value)
 	return end_states;
 }
 /**
- * @brief Checks if program file contains prolog. 
+ * @brief Checks if program file contains prolog.
  * 		  Saved in global variable.
- * @return true 
- * @return false 
+ * @return true
+ * @return false
  */
 bool check_prolog()
 {
-	bool result = false;
+	bool result1 = false;
+	bool result2 = false;
 	int transition;
 	char In_stream;
-	char Prolog[32] = "<?php declare(strict_types=556);";
+	char Prolog1[5] = "<?php";
+
+	for (int i = 0; i < 4; i++)
+	{
+		In_stream = getchar();
+		while (In_stream == '\n')
+		{
+			In_stream = getchar();
+		}
+		if (Prolog1[i] != In_stream)
+		{
+			return result1;
+		}
+	}
+
+	char Prolog2[24] = "declare(strict_types=1);";
+
 	do
 	{
 		transition = getchar();
@@ -698,20 +716,20 @@ bool check_prolog()
 		{
 			In_stream = getchar();
 		}
-		if (Prolog[i] != In_stream)
+		if (Prolog2[i] != In_stream)
 		{
-			return result;
+			return result2;
 		}
 	}
 
-	result = true;
+	result2 = true;
 
-	return result;
+	return result2;
 }
 /**
  * @brief generates new token from source file.
- * 
- * @return struct TOKEN 
+ *
+ * @return struct TOKEN
  */
 struct TOKEN generate_token()
 {
@@ -793,6 +811,14 @@ struct TOKEN generate_token()
 		{
 			fprintf(stderr, "Error ocured in class scanner.c\n");
 			exit(LEX_ANALYSIS_ERR);
+		}
+		else if (previus_state == EOP2)
+		{
+			if (getchar() != EOF)
+			{
+				fprintf(stderr, "Error ocured in class scanner.c character after closing statement\n");
+				exit(LEX_ANALYSIS_ERR);
+			}
 		}
 		else
 		{
