@@ -63,7 +63,7 @@ void list_insert(List *list, Data_type data, int *ef)
     }
     else
     {
-        ef = INTERNAL_ERR;
+        *ef = INTERNAL_ERR;
     }
 }
 
