@@ -9,6 +9,7 @@
  * @author Dušan Slúka (xsluka00)
  * @author Gabriela Paganíková (xpagan00)
  */
+
 #include "returncodes.h"
 #include "scanner.h"
 #include <ctype.h>
@@ -20,16 +21,13 @@
 // Global variables
 bool IS_PROLOG = false;	 // true when input file contains prolog
 int size = DYN_STR_SIZE; // is size of token.value.str so we can dynamicly double it if we have long string
-
-// TO DO comma , - DONE
-//  TO DO !== && === -DONE
-//  TO DO coments - DONE
-//  TO DO prolog represnted in 2 tokens -- In the end is represented in 1 and is checked here. - DONE
-//  TO DO end of program - DONE only for ?>
-//  TO DO end of program without ?>
-//  TO DO. Dynamicly alocate strings (String only size up mby size down would be good to add) - DONE
-//  TO DO. Repair Strings - (,) - missing from automat - DONE
-//  TO DO. Gabika is redoing automat schema so need to do aditional tokens (cca 4 new) 30 mins. -DONE
+/**
+ * @brief KA automat for diferent tokens.
+ * 
+ * @param current_state 
+ * @param transition 
+ * @return States 
+ */
 States Automat(States current_state, int transition)
 {
 	switch (current_state)
@@ -500,7 +498,13 @@ States Automat(States current_state, int transition)
 
 	return current_state;
 }
-
+/**
+ * @brief initialize dynamic Str
+ * 
+ * @param Str 
+ * @param size 
+ * @return char* 
+ */
 char *init_Str(char *Str, int size)
 {
 
@@ -515,12 +519,21 @@ char *init_Str(char *Str, int size)
 
 	return Str;
 }
-
+/**
+ * @brief Frees space after dynamic Str.
+ * 
+ * @param Str 
+ */
 void clean_Str(char *Str)
 {
 	free(Str);
 }
-
+/**
+ * @brief checks if string is keyword 
+ * 
+ * @param value 
+ * @return int 
+ */
 int check_for_keyword(char *value)
 {
 	if (strcmp(value, "if") == 0 || strcmp(value, "else") == 0 || strcmp(value, "float") == 0 || strcmp(value, "function") == 0 || strcmp(value, "int") == 0 || strcmp(value, "null") == 0 || strcmp(value, "return") == 0 || strcmp(value, "string") == 0 || strcmp(value, "void") == 0 || strcmp(value, "while") == 0)
@@ -532,14 +545,26 @@ int check_for_keyword(char *value)
 		return 0;
 	}
 }
-
+/**
+ * @brief changes size of allocated space for dynamic Str
+ * 
+ * @param Str 
+ * @param size 
+ * @return char* 
+ */
 char *resize_Str(char *Str, int size)
 {
 	char *Str2;
 	Str2 = realloc(Str, size * sizeof(char));
 	return Str2;
 }
-
+/**
+ * @brief Choses end state for token
+ * 
+ * @param Final_sate 
+ * @param value 
+ * @return End_States 
+ */
 End_States determin_EndState(States Final_sate, char *value)
 {
 	End_States end_states;
@@ -646,7 +671,12 @@ End_States determin_EndState(States Final_sate, char *value)
 
 	return end_states;
 }
-
+/**
+ * @brief Checks if program file contains prolog. 
+ * 		  Saved in global variable.
+ * @return true 
+ * @return false 
+ */
 bool check_prolog()
 {
 	bool result = false;
@@ -678,7 +708,11 @@ bool check_prolog()
 
 	return result;
 }
-
+/**
+ * @brief generates new token from source file.
+ * 
+ * @return struct TOKEN 
+ */
 struct TOKEN generate_token()
 {
 

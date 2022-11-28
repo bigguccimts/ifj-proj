@@ -9,6 +9,7 @@
  * @author Dušan Slúka (xsluka00)
  * @author Gabriela Paganíková (xpagan00)
  */
+
 #ifndef SCANNER_H
 #define SCANNER_H
 

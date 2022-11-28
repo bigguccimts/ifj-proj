@@ -2,13 +2,21 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
+/**
+ * @brief initialize new list
+ * 
+ * @param list 
+ */
 void list_init(List *list)
 {
     list->firstElement = NULL;
     list->activeElement = NULL;
 }
-
+/**
+ * @brief frees space after list
+ * 
+ * @param list 
+ */
 void list_dispose(List *list)
 {
     struct ListElement *tmpElement;
@@ -29,12 +37,22 @@ void list_dispose(List *list)
     list->activeElement = NULL;
     list->firstElement = NULL;
 }
-
+/**
+ * @brief Sets activity on first element in list
+ * 
+ * @param list 
+ */
 void list_first(List *list)
 {
     list->activeElement = list->firstElement;
 }
-
+/**
+ * @brief inserts new element in list
+ * 
+ * @param list 
+ * @param data 
+ * @param ef 
+ */
 void list_insert(List *list, Data_type data, int *ef)
 {
     struct ListElement *tmpElement = malloc(sizeof(struct ListElement));
@@ -66,7 +84,11 @@ void list_insert(List *list, Data_type data, int *ef)
         *ef = INTERNAL_ERR;
     }
 }
-
+/**
+ * @brief sets activity on next element in a row.
+ * 
+ * @param list 
+ */
 void list_next(List *list)
 {
     if (list->activeElement != NULL)
@@ -81,12 +103,22 @@ void list_next(List *list)
         }
     }
 }
-
+/**
+ * @brief Checks if active elemnt is set.
+ * 
+ * @param list 
+ * @return int 
+ */
 int list_is_active(List *list)
 {
     return list->activeElement != NULL;
 }
-
+/**
+ * @brief Returns data from list element.
+ * 
+ * @param list 
+ * @return Data_type 
+ */
 Data_type list_ret_type(List *list)
 {
     return list->activeElement->type;
