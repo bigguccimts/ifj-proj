@@ -1,21 +1,35 @@
-#include "list.h"
+/**
+ * Implementace překladače imperativního jazyka IFJ22
+ *
+ * @file list.c
+ * @brief File containing the implementation of defined functions in the list.h file
+ *
+ * @author Matúš Ďurica (xduric06)
+ * @author Ivan Mahút (xmahut01)
+ * @author Dušan Slúka (xsluka00)
+ * @author Gabriela Paganíková (xpagan00)
+ */
 
+#include "list.h"
+#include "returncodes.h"
 #include <stdio.h>
 #include <stdlib.h>
+
 /**
- * @brief initialize new list
- * 
- * @param list 
+ * @brief Initializes the list of parameters/arguments
+ *
+ * @param list Pointer to the list
  */
 void list_init(List *list)
 {
     list->firstElement = NULL;
     list->activeElement = NULL;
 }
+
 /**
- * @brief frees space after list
- * 
- * @param list 
+ * @brief Disposes of the list
+ *
+ * @param list Pointer to the list
  */
 void list_dispose(List *list)
 {
@@ -37,46 +51,47 @@ void list_dispose(List *list)
     list->activeElement = NULL;
     list->firstElement = NULL;
 }
+
 /**
- * @brief Sets activity on first element in list
- * 
- * @param list 
+ * @brief Sets activity to the first element of the list
+ *
+ * @param list Pointer to the list
  */
 void list_first(List *list)
 {
     list->activeElement = list->firstElement;
 }
+
 /**
- * @brief inserts new element in list
- * 
- * @param list 
- * @param data 
- * @param ef 
+ * @brief Inserts new element to the list after the last element
+ *
+ * @param list Pointer to the list
+ * @param data Struct containing data of the element
+ * @param ef Pointer to the error flag variable
+ *
+ * @retval INTERNAL_ERR if error occurred
  */
-void list_insert(List *list, Data_type data, int *ef)
+void list_insert(List *list, params_data data, int *ef)
 {
     struct ListElement *tmpElement = malloc(sizeof(struct ListElement));
     if (tmpElement)
     {
         if (!list->firstElement)
         {
-            // fprintf(stderr, "First");
-            tmpElement->type = data;
+            tmpElement->data = data;
             tmpElement->nextElement = NULL;
             list->firstElement = tmpElement;
         }
         else
         {
-            // fprintf(stderr, "Sec");
-            list_first(list);
-            while (list->activeElement->nextElement != NULL)
-            {
-                list_next(list);
-            }
-            tmpElement->type = data;
+            tmpElement->data = data;
             tmpElement->nextElement = NULL;
-            list->activeElement->nextElement = tmpElement;
-            list_first(list);
+            ListElementPtr tmp_rot = list->firstElement;
+            while (tmp_rot->nextElement != NULL)
+            {
+                tmp_rot = tmp_rot->nextElement;
+            }
+            tmp_rot->nextElement = tmpElement;
         }
     }
     else
@@ -84,10 +99,11 @@ void list_insert(List *list, Data_type data, int *ef)
         *ef = INTERNAL_ERR;
     }
 }
+
 /**
- * @brief sets activity on next element in a row.
- * 
- * @param list 
+ * @brief Sets activity to the next element in the list
+ *
+ * @param list Pointer to the list
  */
 void list_next(List *list)
 {
@@ -103,23 +119,25 @@ void list_next(List *list)
         }
     }
 }
+
 /**
- * @brief Checks if active elemnt is set.
- * 
- * @param list 
- * @return int 
+ * @brief Checks the activity of the list
+ *
+ * @param list Pointer to the list
+ * @return int Returns 1 if the list is active
  */
 int list_is_active(List *list)
 {
     return list->activeElement != NULL;
 }
+
 /**
- * @brief Returns data from list element.
- * 
- * @param list 
- * @return Data_type 
+ * @brief Returns data struct of the active element
+ *
+ * @param list Pointer to the list
+ * @return params_data Data struct of active element
  */
-Data_type list_ret_type(List *list)
+params_data list_ret_data(List *list)
 {
-    return list->activeElement->type;
+    return list->activeElement->data;
 }
