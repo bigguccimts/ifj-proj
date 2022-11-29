@@ -12,10 +12,10 @@
 
 #include "symtable.h"
 #include "list.h"
+#include "returncodes.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "returncodes.h"
 
 #define HASH(id) (murmurhash(id, (uint32_t)strlen(id), 0))
 
@@ -35,7 +35,7 @@ void symt_init(Symtab table, int *ef)
         for (int i = 0; i < SYMTAB_MAX_SIZE; i++)
         {
             table[i] = NULL;
-            list_init(table[i]->data.params);
+            // list_init(table[i]->data.params);
         }
     }
     else
