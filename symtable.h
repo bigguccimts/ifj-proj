@@ -16,22 +16,11 @@
 #include "murmurhash.h"
 #include "returncodes.h"
 #include "list.h"
+#include "datatypes.h"
 #include <stdbool.h>
 #include <stdint.h>
 
 #define SYMTAB_MAX_SIZE 256 // Max size of the symbol table - keep it in 2^n format!
-
-/**
- * @brief Contains data types in strings, just for ease of use
- *
- */
-typedef enum
-{
-    INT_T,
-    FLOAT_T,
-    STRING_T,
-    VOID_T
-} Data_type;
 
 /**
  * @brief Struct containg data of 1 item in the symbol table
