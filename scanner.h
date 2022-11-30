@@ -22,7 +22,9 @@
 typedef enum
 {
     Start,
-    ID,
+    FID,
+    VID1,
+    VID2,
     Int,
     Float,
     Exp,
@@ -74,7 +76,8 @@ typedef enum
 
 typedef enum
 {
-    ES_ID,
+    ES_VID2,
+    ES_FID,
     ES_Int,
     ES_Float,
     ES_Exp2,
@@ -108,6 +111,7 @@ typedef enum
     ES_Comm,
     ES_Col,
     ES_EOP2,
+    ES_Sem,
 
     ES_ERROR,
 } End_States;
