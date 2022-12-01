@@ -9,6 +9,8 @@
  * @author Dušan Slúka (xsluka00)
  * @author Gabriela Paganíková (xpagan00)
  */
+// TO DO error for ivo
+
 #include "returncodes.h"
 #include "scanner.h"
 #include <ctype.h>
@@ -21,23 +23,25 @@
 bool IS_PROLOG = false;	 // true when input file contains prolog
 int size = DYN_STR_SIZE; // is size of token.value.str so we can dynamicly double it if we have long string
 
-// TO DO comma , - DONE
-//  TO DO !== && === -DONE
-//  TO DO coments - DONE
-//  TO DO prolog represnted in 2 tokens -- In the end is represented in 1 and is checked here. - DONE
-//  TO DO end of program - DONE only for ?>
-//  TO DO end of program without ?>
-//  TO DO. Dynamicly alocate strings (String only size up mby size down would be good to add) - DONE
-//  TO DO. Repair Strings - (,) - missing from automat - DONE
-//  TO DO. Gabika is redoing automat schema so need to do aditional tokens (cca 4 new) 30 mins. -DONE
+/**
+ * @brief KA automat for diferent tokens.
+ *
+ * @param current_state
+ * @param transition
+ * @return States
+ */
 States Automat(States current_state, int transition)
 {
 	switch (current_state)
 	{
 	case Start:
-		if (isalpha(transition) || transition == '$' || transition == '_' || transition == '?')
+		if (isalpha(transition) || transition == '_' || transition == '?')
 		{
-			current_state = ID;
+			current_state = FID;
+		}
+		else if (transition == '$')
+		{
+			current_state = VID1;
 		}
 		else if ((transition >= '0' && transition <= '9'))
 		{
@@ -99,7 +103,7 @@ States Automat(States current_state, int transition)
 		{
 			current_state = String;
 		}
-		else if (transition == ' ')
+		else if (transition == ' ' || transition == '\n')
 		{
 			current_state = Start;
 		}
@@ -109,6 +113,10 @@ States Automat(States current_state, int transition)
 		}
 		else if (transition == ',')
 		{
+			current_state = Comm;
+		}
+		else if (transition == ':')
+		{
 			current_state = Col;
 		}
 		else
@@ -117,15 +125,14 @@ States Automat(States current_state, int transition)
 		}
 
 		break;
-
-	case ID:
-		if (isalnum(transition) || transition == '_')
-		{
-			current_state = ID;
-		}
-		else if (transition == '>')
+	case FID:
+		if (transition == '>')
 		{
 			current_state = EOP2;
+		}
+		else if (isalnum(transition) || transition == '_')
+		{
+			current_state = FID;
 		}
 		else
 		{
@@ -133,6 +140,27 @@ States Automat(States current_state, int transition)
 		}
 		break;
 
+	case VID1:
+		if (isalnum(transition) || transition == '_')
+		{
+			current_state = VID2;
+		}
+		else
+		{
+			current_state = ERROR;
+		}
+		break;
+
+	case VID2:
+		if (isalnum(transition) || transition == '_')
+		{
+			current_state = VID2;
+		}
+		else
+		{
+			current_state = ERROR;
+		}
+		break;
 	case Int:
 		if (transition >= '0' && transition <= '9')
 		{
@@ -153,7 +181,7 @@ States Automat(States current_state, int transition)
 		break;
 
 	case Float:
-		if (transition >= '0' || transition <= '9')
+		if (transition >= '0' && transition <= '9')
 		{
 			current_state = Float;
 		}
@@ -168,7 +196,7 @@ States Automat(States current_state, int transition)
 		break;
 
 	case Exp:
-		if (transition >= '0' || transition <= '9')
+		if (transition >= '0' && transition <= '9')
 		{
 			current_state = Exp2;
 		}
@@ -182,7 +210,7 @@ States Automat(States current_state, int transition)
 		}
 		break;
 	case Exp1:
-		if (transition >= '0' || transition <= '9')
+		if (transition >= '0' && transition <= '9')
 		{
 			current_state = Exp2;
 		}
@@ -192,7 +220,7 @@ States Automat(States current_state, int transition)
 		}
 		break;
 	case Exp2:
-		if (transition >= '0' || transition <= '9')
+		if (transition >= '0' && transition <= '9')
 		{
 			current_state = Exp2;
 		}
@@ -215,6 +243,10 @@ States Automat(States current_state, int transition)
 		break;
 
 	case Sem:
+		current_state = ERROR;
+		break;
+
+	case Comm:
 		current_state = ERROR;
 		break;
 
@@ -242,7 +274,7 @@ States Automat(States current_state, int transition)
 		{
 			current_state = Com;
 		}
-		else if (transition >= '\n')
+		else if (transition >= '\n' || transition >= EOF)
 		{
 			current_state = Com1;
 		}
@@ -471,16 +503,6 @@ States Automat(States current_state, int transition)
 			current_state = ERROR;
 		}
 		break;
-	case EOP:
-		if (transition == '>')
-		{
-			current_state = EOP2;
-		}
-		else
-		{
-			current_state = ERROR;
-		}
-		break;
 
 	case EOP2:
 		current_state = ERROR;
@@ -493,7 +515,13 @@ States Automat(States current_state, int transition)
 
 	return current_state;
 }
-
+/**
+ * @brief initialize dynamic Str
+ *
+ * @param Str
+ * @param size
+ * @return char*
+ */
 char *init_Str(char *Str, int size)
 {
 
@@ -508,14 +536,24 @@ char *init_Str(char *Str, int size)
 
 	return Str;
 }
-
+/**
+ * @brief Frees space after dynamic Str.
+ *
+ * @param Str
+ */
 void clean_Str(char *Str)
 {
 	free(Str);
 }
-
+/**
+ * @brief checks if string is keyword
+ *
+ * @param value
+ * @return int
+ */
 int check_for_keyword(char *value)
 {
+
 	if (strcmp(value, "if") == 0 || strcmp(value, "else") == 0 || strcmp(value, "float") == 0 || strcmp(value, "function") == 0 || strcmp(value, "int") == 0 || strcmp(value, "null") == 0 || strcmp(value, "return") == 0 || strcmp(value, "string") == 0 || strcmp(value, "void") == 0 || strcmp(value, "while") == 0)
 	{
 		return 1;
@@ -525,28 +563,59 @@ int check_for_keyword(char *value)
 		return 0;
 	}
 }
-
+int check_for_BIF(char *value)
+{
+	if (strcmp(value, "reads") == 0 || strcmp(value, "readi") == 0 || strcmp(value, "readf") == 0 || strcmp(value, "write") == 0 || strcmp(value, "ord") == 0 || strcmp(value, "chr") == 0 || strcmp(value, "strlen") == 0 || strcmp(value, "substring") == 0)
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}
+/**
+ * @brief changes size of allocated space for dynamic Str
+ *
+ * @param Str
+ * @param size
+ * @return char*
+ */
 char *resize_Str(char *Str, int size)
 {
 	char *Str2;
 	Str2 = realloc(Str, size * sizeof(char));
 	return Str2;
 }
-
+/**
+ * @brief Choses end state for token
+ *
+ * @param Final_sate
+ * @param value
+ * @return End_States
+ */
 End_States determin_EndState(States Final_sate, char *value)
 {
 	End_States end_states;
 	switch (Final_sate)
 	{
-	case ID:
+	case FID:
 		if (check_for_keyword(value))
 		{
 			end_states = ES_KEY_WORD;
 		}
+		else if (check_for_BIF(value))
+		{
+
+			end_states = ES_BIF;
+		}
 		else
 		{
-			end_states = ES_ID;
+			end_states = ES_FID;
 		}
+		break;
+	case VID2:
+		end_states = ES_VID2;
 		break;
 	case Int:
 		end_states = ES_Int;
@@ -626,6 +695,15 @@ End_States determin_EndState(States Final_sate, char *value)
 	case EOP2:
 		end_states = ES_EOP2;
 		break;
+	case Comm:
+		end_states = ES_Comm;
+		break;
+	case Col:
+		end_states = ES_Col;
+		break;
+	case Sem:
+		end_states = ES_Sem;
+		break;
 	default:
 		end_states = ES_ERROR;
 		break;
@@ -633,39 +711,70 @@ End_States determin_EndState(States Final_sate, char *value)
 
 	return end_states;
 }
-
+/**
+ * @brief Checks if program file contains prolog.
+ * 		  Saved in global variable.
+ * @return true
+ * @return false
+ */
 bool check_prolog()
 {
-	bool result = false;
+	bool result1 = false;
+	bool result2 = false;
 	int transition;
+
 	char In_stream;
-	char Prolog[32] = "<?php declare(strict_types=556);";
-	do
+	char Prolog1[5] = "<?php";
+	char Prolog2[24] = "declare(strict_types=1);";
+
+	/*do
 	{
 		transition = getchar();
-	} while (transition == ' ');
+	} while (transition == '\n');
+	ungetc(transition, stdin);*/
 
-	// give back char posible < already loaded
-	ungetc(transition, stdin);
-
-	for (int i = 0; i < 31; i++)
+	for (int i = 0; i < 5; i++)
 	{
 		In_stream = getchar();
-		while (In_stream == '\n')
+
+		if (Prolog1[i] != In_stream)
 		{
-			In_stream = getchar();
-		}
-		if (Prolog[i] != In_stream)
-		{
-			return result;
+			return result1;
 		}
 	}
 
-	result = true;
+	do
+	{
+		transition = getchar();
+	} while (transition == ' ' || transition == '\n');
 
-	return result;
+	// give back char posible < already loaded
+
+	ungetc(transition, stdin);
+
+	for (int i = 0; i < 24; i++)
+	{
+		In_stream = getchar();
+
+		if (Prolog2[i] != In_stream)
+		{
+			return result2;
+		}
+	}
+
+	transition = getchar();
+
+	ungetc(transition, stdin);
+
+	result2 = true;
+
+	return result2;
 }
-
+/**
+ * @brief generates new token from source file.
+ *
+ * @return struct TOKEN
+ */
 struct TOKEN generate_token()
 {
 
@@ -675,10 +784,10 @@ struct TOKEN generate_token()
 	States current_state = Start;
 	// define variables
 	int i = 0;
-
+	size = DYN_STR_SIZE;
 	char *Str = NULL;
 
-	Str = init_Str(Str, DYN_STR_SIZE);
+	Str = init_Str(Str, size);
 
 	// prolog check
 	// will be done only once when first getToken is called
@@ -706,46 +815,63 @@ struct TOKEN generate_token()
 		do
 		{
 			int transition = getchar();
-			// We take another character if we took EOL-\n
-			while (transition == '\n')
+
+			/*while (transition == 10)
 			{
 				transition = getchar();
-			}
+			}*/
+			// We take another character if we took EOL-\n
 
 			previus_state = current_state;
 			current_state = Automat(current_state, transition);
 
 			if (current_state != ERROR)
 			{
-				if (transition != ' ' || transition != '\n')
+				int a;
+				// Value of token cant contain whitespace and EOL
+				if (transition == 32 || transition == 10 || transition == EOF)
+				{
+				}
+				else
 				{
 					Str[i] = transition;
+					a = i + 1;
+					// if array containing value of token runes out of space doubles in size
+					if (a > size - 1)
+					{
+						size = 2 * size;
+						Str = resize_Str(Str, size);
+					}
+					// increment index of an Array containing value of token
+					i++;
 				}
-				int a = i + 1;
-				// if array containing value of token runes out of space doubles in size
-				if (a > size - 1)
-				{
-					size = 2 * size;
-					Str = resize_Str(Str, size);
-				}
-				// increment index of an Array containing value of token
-				i++;
 			}
 			else
 			{
 				// unused char is puted back on strem w/o empty space
-				if (transition != ' ')
+				if (transition == ' ' || transition == '\n' || transition == EOF)
+				{}else
 				{
 					ungetc(transition, stdin);
 				}
+				
 			}
 		} while (current_state != ERROR);
 
 		// checks if we didn t end in state whitch is not END STATE
-		if (previus_state == Exp || previus_state == Exp1 || previus_state == Com || previus_state == Com2 || previus_state == Com3 || previus_state == Equ1 || previus_state == Notequ1)
+		if (previus_state == Exp || previus_state == Exp1 || previus_state == Com || previus_state == Com2 || previus_state == Com3 || previus_state == Equ1 || previus_state == Notequ1 || previus_state == VID1)
 		{
-			fprintf(stderr, "Error ocured in class scanner.c\n");
+			printf("previus state, %d\n",previus_state);
+			fprintf(stderr, "Error ocured in class scanner.c Not valid ES\n");
 			exit(LEX_ANALYSIS_ERR);
+		}
+		else if (previus_state == EOP2)
+		{
+			if (getchar() != EOF)
+			{
+				fprintf(stderr, "Error ocured in class scanner.c character after closing statement\n");
+				exit(LEX_ANALYSIS_ERR);
+			}
 		}
 		else
 		{
@@ -760,13 +886,44 @@ struct TOKEN generate_token()
 		}
 		else if (token.end_state == ES_Float)
 		{
-			token.Value.floating = *Str;
+			float x;
+			x = atof(Str);
+			token.Value.floating = x;
 		}
 		else
 		{
 			token.Value.Str = Str;
 		}
 
+		// zmazat nizsie
+		/*
+		printf("Token endstate : %d\n", token.end_state);
+		if (token.end_state == ES_Int)
+		{
+			printf("Token Int- %d ", token.Value.intiger);
+		}
+		else if (token.end_state == ES_Float)
+		{
+			printf("Token Flo- %f ", token.Value.floating);
+		}
+		else
+		{
+			printf("Token Str-");
+			for (int i = 0; i < size; i++)
+			{
+				if (token.Value.Str[i] != NULL)
+				{
+					printf("%c", token.Value.Str[i]);
+				}
+				else
+				{
+					break;
+				}
+			}
+		}
+		printf("\n");
+		printf("----------------------------\n");
+		*/
 		return token;
 	}
 }

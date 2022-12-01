@@ -26,3 +26,4 @@ typedef enum
 } Data_type;
 
 #endif // DATATYPES_H
+
