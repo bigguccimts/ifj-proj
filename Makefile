@@ -6,12 +6,19 @@
 # Gabriela Paganíková (xpagan00)
 
 CC=gcc
-CFLAGS=-std=c99 -pedantic -Wall -Wextra 
+CFLAGS=-std=c99 -pedantic -Wall -Wextra -Werror
 RM=rm -f
 PROJ=ifj22
 
-$(PROJ): *.c clean
+all: *.c clean
 	$(CC) $(CFLAGS) -o $(PROJ)  *.c 
 
 clean:
-	$(RM) *.o $(PROJ)
+	$(RM) *.o *.out *.ifjcode $(PROJ)
+
+debug: all
+	@./$(PROJ) > $(PROJ).ifjcode
+	@./ic22int $(PROJ).ifjcode
+	
+val: all
+	@valgrind --leak-check=full --show-leak-kinds=all ./$(PROJ)
