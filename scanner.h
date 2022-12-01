@@ -112,6 +112,8 @@ typedef enum
     ES_Col,
     ES_EOP2,
     ES_Sem,
+    //Build in function
+    ES_BIF,
 
     ES_ERROR,
 } End_States;
