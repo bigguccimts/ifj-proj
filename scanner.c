@@ -897,6 +897,7 @@ struct TOKEN generate_token()
 		}
 
 		// zmazat nizsie
+		/*
 		printf("Token endstate : %d\n", token.end_state);
 
 		if (token.end_state == ES_Int)
@@ -926,7 +927,7 @@ struct TOKEN generate_token()
 		}
 		printf("\n");
 		printf("----------------------------\n");
-
+		*/
 		return token;
 	}
 }
