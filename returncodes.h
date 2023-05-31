@@ -1,13 +1,10 @@
-/*
+/**
  * Implementace překladače imperativního jazyka IFJ22
  *
  * @file returncodes.h
  * @brief File containing return codes for the compiler
  *
  * @author Matúš Ďurica (xduric06)
- * @author Ivan Mahút (xmahut01)
- * @author Dušan Slúka (xsluka00)
- * @author Gabriela Paganíková (xpagan00)
  */
 
 // Inclusion guard

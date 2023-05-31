@@ -1,17 +1,21 @@
 # Implementace překladače imperativního jazyka IFJ22 
 #
-# Matúš Ďurica (xduric06) 
-# Ivan Mahút (xmahut01) 
-# Dušan Slúka (xsluka00)
-# Gabriela Paganíková (xpagan00)
+# Matúš Ďurica (xduric06)
 
 CC=gcc
-CFLAGS=-std=c99 -pedantic -Wall -Wextra
+CFLAGS=-std=c99 -pedantic -Wall -Wextra 
 RM=rm -f
 PROJ=ifj22
 
-$(PROJ): *.c clean
-	$(CC) $(CFLAGS) -o $(PROJ) *.c
+all: *.c clean
+	$(CC) $(CFLAGS) -o $(PROJ)  *.c 
 
 clean:
-	$(RM) *.o $(PROJ)
+	$(RM) *.o *.out *.ifjcode $(PROJ)
+
+debug: all
+	@ cat pokus.txt | ./$(PROJ) > $(PROJ).ifjcode
+	@./ic22int $(PROJ).ifjcode
+	
+val: all
+	@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(PROJ)<pokus.txt
